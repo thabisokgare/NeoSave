@@ -1,0 +1,17 @@
+services:
+  backend:
+    build:
+      context: ./backend/NeoSave.API
+      dockerfile: Dockerfile
+    ports:
+      - "8080:80"
+    volumes:
+      - ./backend/NeoSave.API:/app
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development
+    networks:
+      - neosave-net
+
+networks:
+  neosave-net:
+    driver: bridge
