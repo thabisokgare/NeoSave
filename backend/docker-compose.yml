@@ -1,0 +1,16 @@
+version: '3.8'
+services:
+  api:
+    build:
+      context: ./NeoSave.API
+      dockerfile: dockerfile
+    ports:
+      - "5000:80"
+      - "5001:443"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_URLS=http://+:80;https://+:443
+      - ASPNETCORE_Kestrel__Certificates__Default__Path=/https/aspnetapp.pfx
+      - ASPNETCORE_Kestrel__Certificates__Default__Password=YourSecurePassword
+    volumes:
+      - ${USERPROFILE}/.aspnet/https:/https:row

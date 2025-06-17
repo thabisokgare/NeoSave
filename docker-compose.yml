@@ -1,16 +1,31 @@
+version: '3.8'
+
 services:
   backend:
     build:
       context: ./backend/NeoSave.API
       dockerfile: Dockerfile
     ports:
-      - "8080:80"
-    volumes:
-      - ./backend/NeoSave.API:/app
+      - "5000:80"
+      - "5001:443"
     environment:
-      ASPNETCORE_ENVIRONMENT: Development
-    networks:
-      - neosave-net
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_URLS=http://+:80;https://+:443
+      - ASPNETCORE_Kestrel__Certificates__Default__Path=/https/aspnetapp.pfx
+      - ASPNETCORE_Kestrel__Certificates__Default__Password=YourPassword123!
+    volumes:
+      - ${USERPROFILE}/.aspnet/https:/https:ro
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"
+    depends_on:
+      - backend
+    environment:
+      - REACT_APP_API_URL=http://localhost:5000
 
 networks:
   neosave-net:

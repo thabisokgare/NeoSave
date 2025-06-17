@@ -1,13 +1,20 @@
-namespace NeoSave.API.Models;
-
-public class Transaction
+namespace NeoSave.API.Models
 {
-    public int Id { get; set; }
-    public string Title { get; set; } = string.Empty;
-    public decimal Amount { get; set; }
-    public string Category { get; set; } = string.Empty;
-    public DateTime Date { get; set; } = DateTime.UtcNow;
-    public string Type { get; set; } = string.Empty; // Income / Expense
-    public string PaymentMethod { get; set; } = string.Empty;
-    public string UserId { get; set; } = string.Empty;
+    public class Transaction
+    {
+        public int Id { get; set; }
+        public decimal Amount { get; set; }
+        public required string Description { get; set; }
+        public DateTime Date { get; set; }
+        public required string Category { get; set; }
+        public TransactionType Type { get; set; }
+        public int UserId { get; set; }
+        public User? User { get; set; }
+    }
+
+    public enum TransactionType
+    {
+        Income,
+        Expense
+    }
 }
