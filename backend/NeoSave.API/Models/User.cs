@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace NeoSave.API.Models
 {
-    public class User
+    public class User : IdentityUser
     {
 
         public int Id { get; set; }
