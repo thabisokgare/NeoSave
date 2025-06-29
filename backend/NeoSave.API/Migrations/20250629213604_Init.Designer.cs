@@ -12,8 +12,8 @@ using NeoSave.API.Data;
 namespace NeoSave.API.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20250629204254_Identity")]
-    partial class Identity
+    [Migration("20250629213604_Init")]
+    partial class Init
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)

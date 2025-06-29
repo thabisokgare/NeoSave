@@ -14,36 +14,29 @@ namespace NeoSave.API.Data
         {
         }
 
-        public DbSet<Models.User> Users { get; set; }
-        public DbSet<Models.Budget> Budgets { get; set; }
+        public DbSet<Budget> Budgets { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
 
-            modelBuilder.Entity<Models.Budget>()
+            modelBuilder.Entity<Budget>()
                 .Property(b => b.Amount)
                 .HasPrecision(18, 2); // 18 digits, 2 decimal places
-        }
-
-        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-        {
-            optionsBuilder.UseSqlServer(
-                "Server=(localdb)\\mssqllocaldb;Database=NeoSaveDb;Trusted_Connection=True;MultipleActiveResultSets=true");
         }
 
         public void Seed()
         {
             if (!Users.Any())
             {
-                var user1 = new Models.User
+                var user1 = new Models.AppUser
                 {
                     Name = "Alice",
                     Email = "alice@example.com",
                     Password = "password123",
-                    Budgets = new List<Models.Budget>
+                    Budgets = new List<Budget>
                     {
-                        new Models.Budget
+                        new Budget
                         {
                             Name = "Groceries",
                             Amount = 500,
@@ -55,7 +48,7 @@ namespace NeoSave.API.Data
                     }
                 };
 
-                var user2 = new Models.User
+                var user2 = new Models.AppUser
                 {
                     Name = "Bob",
                     Email = "bob@example.com",
@@ -75,10 +68,14 @@ namespace NeoSave.API.Data
                 };
 
                 Users.AddRange(user1, user2);
+                Users.AddRange(user1, user2); // Remove this line
+
+                // Add users to the AppUser DbSet (from IdentityDbContext)
+                Set<AppUser>().AddRange(user1, user2);
                 SaveChanges();
             }
         }
+
+
     }
-
-
 }
