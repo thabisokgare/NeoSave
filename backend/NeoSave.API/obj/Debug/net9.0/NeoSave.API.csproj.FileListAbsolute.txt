@@ -163,3 +163,10 @@ C:\Users\thabi\NeoSave\backend\NeoSave.API\bin\Debug\net9.0\runtimes\win\lib\net
 C:\Users\thabi\NeoSave\backend\NeoSave.API\bin\Debug\net9.0\runtimes\win\lib\net6.0\System.Runtime.Caching.dll
 C:\Users\thabi\NeoSave\backend\NeoSave.API\bin\Debug\net9.0\runtimes\win\lib\net6.0\System.Security.Cryptography.ProtectedData.dll
 C:\Users\thabi\NeoSave\backend\NeoSave.API\bin\Debug\net9.0\runtimes\win\lib\net6.0\System.Windows.Extensions.dll
+C:\Users\thabi\NeoSave\backend\NeoSave.API\obj\Debug\net9.0\NeoSave.API.sourcelink.json
+C:\Users\thabi\NeoSave\backend\NeoSave.API\bin\Debug\net9.0\Microsoft.AspNetCore.Authentication.JwtBearer.dll
+C:\Users\thabi\NeoSave\backend\NeoSave.API\bin\Debug\net9.0\Microsoft.AspNetCore.Cryptography.Internal.dll
+C:\Users\thabi\NeoSave\backend\NeoSave.API\bin\Debug\net9.0\Microsoft.AspNetCore.Cryptography.KeyDerivation.dll
+C:\Users\thabi\NeoSave\backend\NeoSave.API\bin\Debug\net9.0\Microsoft.AspNetCore.Identity.EntityFrameworkCore.dll
+C:\Users\thabi\NeoSave\backend\NeoSave.API\bin\Debug\net9.0\Microsoft.Extensions.Identity.Core.dll
+C:\Users\thabi\NeoSave\backend\NeoSave.API\bin\Debug\net9.0\Microsoft.Extensions.Identity.Stores.dll
