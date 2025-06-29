@@ -1,11 +1,10 @@
-Here's a professional and detailed `README.md` file for your **NeoSave** project based on the GitHub repo name and the UI design you've shown:
 
----
 
-````markdown
+
 # 💸 NeoSave — Smart AI-Powered Budgeting & Savings App
 
-![NeoSave Banner](./path-to-your-image.png) <!-- Replace with actual image path -->
+![NeoSave Banner](![image](https://github.com/user-attachments/assets/a4036540-28ff-4156-b32d-1d13bd14bb59)
+) <!-- Replace with actual image path -->
 
 NeoSave is a modern, AI-powered personal finance app designed to help users take control of their money. With intelligent budgeting, automated savings, and personalized investment guidance, NeoSave is your all-in-one platform to achieve financial wellness.
 
