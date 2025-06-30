@@ -6,7 +6,7 @@ import { Check, Star } from "lucide-react"
 const plans = [
   {
     name: "Free",
-    price: "$0",
+    price: "R0",
     period: "forever",
     description: "Perfect for getting started with budgeting",
     features: [
@@ -22,7 +22,7 @@ const plans = [
   },
   {
     name: "Plus",
-    price: "$9.99",
+    price: "R70.99",
     period: "per month",
     description: "Enhanced features for serious savers",
     features: [
@@ -39,7 +39,7 @@ const plans = [
   },
   {
     name: "Pro",
-    price: "$19.99",
+    price: "R190.99",
     period: "per month",
     description: "Complete financial management solution",
     features: [

@@ -93,19 +93,19 @@ export default function Hero() {
               {/* Balance Card */}
               <div className="bg-gradient-to-r from-indigo-500 to-cyan-500 rounded-xl p-4 mb-6 text-white">
                 <p className="text-sm opacity-90">Total Balance</p>
-                <p className="text-2xl font-bold">$12,847.32</p>
-                <p className="text-sm opacity-90">+$247 this month</p>
+                <p className="text-2xl font-bold">R12,847.32</p>
+                <p className="text-sm opacity-90">+R247 this month</p>
               </div>
 
               {/* Quick Stats */}
               <div className="grid grid-cols-2 gap-4 mb-6">
                 <div className="bg-green-50 rounded-lg p-3">
                   <p className="text-xs text-green-600 font-medium">SAVED</p>
-                  <p className="text-lg font-bold text-green-700">$2,340</p>
+                  <p className="text-lg font-bold text-green-700">R2,340</p>
                 </div>
                 <div className="bg-blue-50 rounded-lg p-3">
                   <p className="text-xs text-blue-600 font-medium">INVESTED</p>
-                  <p className="text-lg font-bold text-blue-700">$5,200</p>
+                  <p className="text-lg font-bold text-blue-700">R5,200</p>
                 </div>
               </div>
 
@@ -118,7 +118,7 @@ export default function Hero() {
                   <div>
                     <p className="text-sm font-medium text-gray-900">Smart Suggestion</p>
                     <p className="text-xs text-gray-600 mt-1">
-                      You can save $120 more this month by reducing dining out expenses.
+                      You can save R120 more this month by reducing dining out expenses.
                     </p>
                   </div>
                 </div>
