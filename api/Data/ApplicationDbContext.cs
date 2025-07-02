@@ -1,10 +1,10 @@
 using System;
-using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
-using api.Models; // Ensure you have the correct namespace for your User model
+using api.Models;
 
 namespace api.Data
 {
@@ -14,11 +14,42 @@ namespace api.Data
             : base(options)
         {
         }
-        // DbSets for your entities can be added here
-        // public DbSet<YourEntity> YourEntities { get; set; }
-        public DbSet<User> Users { get; set; }
+
+        // Optional: keep if you use _context.Users directly
 
 
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            base.OnModelCreating(modelBuilder);
+
+            modelBuilder.Entity<User>()
+                .Property(u => u.Name)
+                .IsRequired();
+
+            // Add other model configurations here as your app grows
+        }
+
+        public override int SaveChanges()
+        {
+            UpdateTimestamps();
+            return base.SaveChanges();
+        }
+
+        public override async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
+        {
+            UpdateTimestamps();
+            return await base.SaveChangesAsync(cancellationToken);
+        }
+
+        private void UpdateTimestamps()
+        {
+            var modifiedUsers = ChangeTracker.Entries<User>()
+                .Where(e => e.State == EntityState.Modified);
+
+            foreach (var entry in modifiedUsers)
+            {
+                entry.Entity.UpdatedAt = DateTime.UtcNow;
+            }
+        }
     }
-
 }

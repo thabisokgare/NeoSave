@@ -1,6 +1,7 @@
 using System;
 using System.ComponentModel.DataAnnotations;
 using Microsoft.AspNetCore.Identity;
+using api.Enums;
 
 namespace api.Models
 {
@@ -10,11 +11,13 @@ namespace api.Models
         public string Name { get; set; }
 
         [Phone]
-        [StringLength(15, ErrorMessage = "Phone number cannot be longer than 15 digits.")]
-        public override string PhoneNumber { get; set; }
+        public override string? PhoneNumber { get; set; }
 
-        public string OnboardingStatus { get; set; } = "pending";
-        public string SubscriptionTier { get; set; } = "free";
+        [Required]
+        public OnboardingStatus OnboardingStatus { get; set; } = OnboardingStatus.Pending;
+
+        [Required]
+        public SubscriptionTier Tier { get; set; } = SubscriptionTier.Free;
 
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
         public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;
