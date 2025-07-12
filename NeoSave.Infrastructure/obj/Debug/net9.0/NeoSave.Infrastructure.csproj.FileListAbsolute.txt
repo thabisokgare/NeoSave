@@ -1,0 +1,17 @@
+C:\Users\thabi\NeoSave\NeoSave.Infrastructure\bin\Debug\net9.0\NeoSave.Infrastructure.deps.json
+C:\Users\thabi\NeoSave\NeoSave.Infrastructure\bin\Debug\net9.0\NeoSave.Infrastructure.runtimeconfig.json
+C:\Users\thabi\NeoSave\NeoSave.Infrastructure\bin\Debug\net9.0\NeoSave.Infrastructure.dll
+C:\Users\thabi\NeoSave\NeoSave.Infrastructure\bin\Debug\net9.0\NeoSave.Infrastructure.pdb
+C:\Users\thabi\NeoSave\NeoSave.Infrastructure\bin\Debug\net9.0\NeoSave.Domain.dll
+C:\Users\thabi\NeoSave\NeoSave.Infrastructure\bin\Debug\net9.0\NeoSave.Domain.pdb
+C:\Users\thabi\NeoSave\NeoSave.Infrastructure\obj\Debug\net9.0\NeoSave.Infrastructure.csproj.AssemblyReference.cache
+C:\Users\thabi\NeoSave\NeoSave.Infrastructure\obj\Debug\net9.0\NeoSave.Infrastructure.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\thabi\NeoSave\NeoSave.Infrastructure\obj\Debug\net9.0\NeoSave.Infrastructure.AssemblyInfoInputs.cache
+C:\Users\thabi\NeoSave\NeoSave.Infrastructure\obj\Debug\net9.0\NeoSave.Infrastructure.AssemblyInfo.cs
+C:\Users\thabi\NeoSave\NeoSave.Infrastructure\obj\Debug\net9.0\NeoSave.Infrastructure.csproj.CoreCompileInputs.cache
+C:\Users\thabi\NeoSave\NeoSave.Infrastructure\obj\Debug\net9.0\NeoSave..82200992.Up2Date
+C:\Users\thabi\NeoSave\NeoSave.Infrastructure\obj\Debug\net9.0\NeoSave.Infrastructure.dll
+C:\Users\thabi\NeoSave\NeoSave.Infrastructure\obj\Debug\net9.0\refint\NeoSave.Infrastructure.dll
+C:\Users\thabi\NeoSave\NeoSave.Infrastructure\obj\Debug\net9.0\NeoSave.Infrastructure.pdb
+C:\Users\thabi\NeoSave\NeoSave.Infrastructure\obj\Debug\net9.0\NeoSave.Infrastructure.genruntimeconfig.cache
+C:\Users\thabi\NeoSave\NeoSave.Infrastructure\obj\Debug\net9.0\ref\NeoSave.Infrastructure.dll

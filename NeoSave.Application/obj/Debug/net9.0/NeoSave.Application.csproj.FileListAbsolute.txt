@@ -1,0 +1,17 @@
+C:\Users\thabi\NeoSave\NeoSave.Application\bin\Debug\net9.0\NeoSave.Application.deps.json
+C:\Users\thabi\NeoSave\NeoSave.Application\bin\Debug\net9.0\NeoSave.Application.dll
+C:\Users\thabi\NeoSave\NeoSave.Application\bin\Debug\net9.0\NeoSave.Application.pdb
+C:\Users\thabi\NeoSave\NeoSave.Application\bin\Debug\net9.0\NeoSave.Domain.dll
+C:\Users\thabi\NeoSave\NeoSave.Application\bin\Debug\net9.0\NeoSave.Infrastructure.dll
+C:\Users\thabi\NeoSave\NeoSave.Application\bin\Debug\net9.0\NeoSave.Domain.pdb
+C:\Users\thabi\NeoSave\NeoSave.Application\bin\Debug\net9.0\NeoSave.Infrastructure.pdb
+C:\Users\thabi\NeoSave\NeoSave.Application\obj\Debug\net9.0\NeoSave.Application.csproj.AssemblyReference.cache
+C:\Users\thabi\NeoSave\NeoSave.Application\obj\Debug\net9.0\NeoSave.Application.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\thabi\NeoSave\NeoSave.Application\obj\Debug\net9.0\NeoSave.Application.AssemblyInfoInputs.cache
+C:\Users\thabi\NeoSave\NeoSave.Application\obj\Debug\net9.0\NeoSave.Application.AssemblyInfo.cs
+C:\Users\thabi\NeoSave\NeoSave.Application\obj\Debug\net9.0\NeoSave.Application.csproj.CoreCompileInputs.cache
+C:\Users\thabi\NeoSave\NeoSave.Application\obj\Debug\net9.0\NeoSave..606653C6.Up2Date
+C:\Users\thabi\NeoSave\NeoSave.Application\obj\Debug\net9.0\NeoSave.Application.dll
+C:\Users\thabi\NeoSave\NeoSave.Application\obj\Debug\net9.0\refint\NeoSave.Application.dll
+C:\Users\thabi\NeoSave\NeoSave.Application\obj\Debug\net9.0\NeoSave.Application.pdb
+C:\Users\thabi\NeoSave\NeoSave.Application\obj\Debug\net9.0\ref\NeoSave.Application.dll

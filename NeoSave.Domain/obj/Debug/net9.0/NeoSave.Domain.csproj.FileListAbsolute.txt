@@ -1,0 +1,11 @@
+C:\Users\thabi\NeoSave\NeoSave.Domain\bin\Debug\net9.0\NeoSave.Domain.deps.json
+C:\Users\thabi\NeoSave\NeoSave.Domain\bin\Debug\net9.0\NeoSave.Domain.dll
+C:\Users\thabi\NeoSave\NeoSave.Domain\bin\Debug\net9.0\NeoSave.Domain.pdb
+C:\Users\thabi\NeoSave\NeoSave.Domain\obj\Debug\net9.0\NeoSave.Domain.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\thabi\NeoSave\NeoSave.Domain\obj\Debug\net9.0\NeoSave.Domain.AssemblyInfoInputs.cache
+C:\Users\thabi\NeoSave\NeoSave.Domain\obj\Debug\net9.0\NeoSave.Domain.AssemblyInfo.cs
+C:\Users\thabi\NeoSave\NeoSave.Domain\obj\Debug\net9.0\NeoSave.Domain.csproj.CoreCompileInputs.cache
+C:\Users\thabi\NeoSave\NeoSave.Domain\obj\Debug\net9.0\NeoSave.Domain.dll
+C:\Users\thabi\NeoSave\NeoSave.Domain\obj\Debug\net9.0\refint\NeoSave.Domain.dll
+C:\Users\thabi\NeoSave\NeoSave.Domain\obj\Debug\net9.0\NeoSave.Domain.pdb
+C:\Users\thabi\NeoSave\NeoSave.Domain\obj\Debug\net9.0\ref\NeoSave.Domain.dll
