@@ -9,3 +9,4 @@ C:\Users\thabi\NeoSave\NeoSave.Domain\obj\Debug\net9.0\NeoSave.Domain.dll
 C:\Users\thabi\NeoSave\NeoSave.Domain\obj\Debug\net9.0\refint\NeoSave.Domain.dll
 C:\Users\thabi\NeoSave\NeoSave.Domain\obj\Debug\net9.0\NeoSave.Domain.pdb
 C:\Users\thabi\NeoSave\NeoSave.Domain\obj\Debug\net9.0\ref\NeoSave.Domain.dll
+C:\Users\thabi\NeoSave\NeoSave.Domain\obj\Debug\net9.0\NeoSave.Domain.sourcelink.json

@@ -23,8 +23,7 @@ namespace NeoSave.Application.Services
         public async Task<string> RegisterAsync(RegisterRequest request)
         {
             // 1. Check if user already exists
-            var existingUser = await _context.Users
-                .FirstOrDefaultAsync(u => u.Email == request.Email);
+            var existingUser = await _context.Users.FirstOrDefaultAsync(u => u.Email == request.Email);
 
             if (existingUser != null)
                 return "A user with this email already exists.";
