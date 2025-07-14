@@ -27,5 +27,16 @@ namespace NeoSave.API.Controllers
             var result = await _authService.RegisterAsync(request);
             return Ok(new { message = result });
         }
+
+        [HttpPost("login")]
+        public async Task<IActionResult> Login(LoginRequest request)
+        {
+            // Implement login logic here
+            var result = await _authService.LoginAsync(request);
+            // For now, just return a placeholder message
+            return Ok(new { message = "Login functionality not implemented yet." });
+        }
+
+        
     }
 }

@@ -13,12 +13,14 @@ namespace NeoSave.Application.Services
 {
     public class AuthService : IAuthService
     {
-       private readonly NeoSaveDbContext _context;
+        private readonly NeoSaveDbContext _context;
 
         public AuthService(NeoSaveDbContext context)
         {
             _context = context;
         }
+
+
 
         public async Task<string> RegisterAsync(RegisterRequest request)
         {
@@ -47,12 +49,33 @@ namespace NeoSave.Application.Services
             return $"User {user.FullName} registered successfully.";
         }
 
+
         private string HashPassword(string password)
         {
             using var sha256 = SHA256.Create();
             var bytes = Encoding.UTF8.GetBytes(password);
             var hash = sha256.ComputeHash(bytes);
             return Convert.ToBase64String(hash);
+        }
+        
+
+
+        public async Task LoginAsync(LoginRequest request)
+        {
+            // 1. Find the user by email
+            var user = await _context.Users.FirstOrDefaultAsync(u => u.Email == request.Email);
+            if (user == null)
+                return;
+
+            // 2. Verify the password
+            var hashedPassword = HashPassword(request.Password);
+            if (hashedPassword != user.PasswordHash)
+                return;
+
+            // 3. Generate a token (for simplicity, returning a dummy token here)
+            
+            // You may want to handle token logic here
+            return;
         }
     }
 

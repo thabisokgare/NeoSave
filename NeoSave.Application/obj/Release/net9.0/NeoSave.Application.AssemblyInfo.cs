@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("NeoSave.Application")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Release")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+3fde37a8dac48068a0b93972d2154a68a1f2c759")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+fb015f1cc6310874b39ab053c7a1310f70b404db")]
 [assembly: System.Reflection.AssemblyProductAttribute("NeoSave.Application")]
 [assembly: System.Reflection.AssemblyTitleAttribute("NeoSave.Application")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

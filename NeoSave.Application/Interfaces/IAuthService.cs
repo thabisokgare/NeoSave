@@ -8,6 +8,7 @@ namespace NeoSave.Application.Interfaces
 {
     public interface IAuthService
     {
+        Task<string> LoginAsync(LoginRequest request);
         Task<string> RegisterAsync(RegisterRequest request);
     }
 }

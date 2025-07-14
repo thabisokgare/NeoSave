@@ -1,8 +1,13 @@
 {
   "ExpandedNodes": [
     "",
-    "\\NeoSave.API"
+    "\\NeoSave.API",
+    "\\NeoSave.API\\Controllers",
+    "\\NeoSave.Application",
+    "\\NeoSave.Application\\DTOs",
+    "\\NeoSave.Application\\Interfaces",
+    "\\NeoSave.Application\\Services"
   ],
-  "SelectedNode": "\\NeoSave.API\\appsettings.Development.json",
+  "SelectedNode": "\\NeoSave.Application\\Interfaces",
   "PreviewInSolutionExplorer": false
 }
