@@ -30,6 +30,7 @@ C:\Users\thabi\NeoSave\NeoSave.API\bin\Debug\net9.0\Microsoft.EntityFrameworkCor
 C:\Users\thabi\NeoSave\NeoSave.API\bin\Debug\net9.0\Microsoft.Extensions.Caching.Abstractions.dll
 C:\Users\thabi\NeoSave\NeoSave.API\bin\Debug\net9.0\Microsoft.Extensions.Caching.Memory.dll
 C:\Users\thabi\NeoSave\NeoSave.API\bin\Debug\net9.0\Microsoft.Extensions.Configuration.Abstractions.dll
+C:\Users\thabi\NeoSave\NeoSave.API\bin\Debug\net9.0\Microsoft.Extensions.Configuration.Binder.dll
 C:\Users\thabi\NeoSave\NeoSave.API\bin\Debug\net9.0\Microsoft.Extensions.DependencyInjection.dll
 C:\Users\thabi\NeoSave\NeoSave.API\bin\Debug\net9.0\Microsoft.Extensions.DependencyInjection.Abstractions.dll
 C:\Users\thabi\NeoSave\NeoSave.API\bin\Debug\net9.0\Microsoft.Extensions.DependencyModel.dll
@@ -49,6 +50,8 @@ C:\Users\thabi\NeoSave\NeoSave.API\bin\Debug\net9.0\Microsoft.OpenApi.dll
 C:\Users\thabi\NeoSave\NeoSave.API\bin\Debug\net9.0\Microsoft.SqlServer.Server.dll
 C:\Users\thabi\NeoSave\NeoSave.API\bin\Debug\net9.0\Microsoft.Win32.SystemEvents.dll
 C:\Users\thabi\NeoSave\NeoSave.API\bin\Debug\net9.0\Mono.TextTemplating.dll
+C:\Users\thabi\NeoSave\NeoSave.API\bin\Debug\net9.0\Npgsql.dll
+C:\Users\thabi\NeoSave\NeoSave.API\bin\Debug\net9.0\Npgsql.EntityFrameworkCore.PostgreSQL.dll
 C:\Users\thabi\NeoSave\NeoSave.API\bin\Debug\net9.0\Swashbuckle.AspNetCore.Swagger.dll
 C:\Users\thabi\NeoSave\NeoSave.API\bin\Debug\net9.0\Swashbuckle.AspNetCore.SwaggerGen.dll
 C:\Users\thabi\NeoSave\NeoSave.API\bin\Debug\net9.0\Swashbuckle.AspNetCore.SwaggerUI.dll
@@ -158,6 +161,7 @@ C:\Users\thabi\NeoSave\NeoSave.API\obj\Debug\net9.0\NeoSave.API.AssemblyInfo.cs
 C:\Users\thabi\NeoSave\NeoSave.API\obj\Debug\net9.0\NeoSave.API.csproj.CoreCompileInputs.cache
 C:\Users\thabi\NeoSave\NeoSave.API\obj\Debug\net9.0\NeoSave.API.MvcApplicationPartsAssemblyInfo.cs
 C:\Users\thabi\NeoSave\NeoSave.API\obj\Debug\net9.0\NeoSave.API.MvcApplicationPartsAssemblyInfo.cache
+C:\Users\thabi\NeoSave\NeoSave.API\obj\Debug\net9.0\NeoSave.API.sourcelink.json
 C:\Users\thabi\NeoSave\NeoSave.API\obj\Debug\net9.0\rjimswa.dswa.cache.json
 C:\Users\thabi\NeoSave\NeoSave.API\obj\Debug\net9.0\rjsmrazor.dswa.cache.json
 C:\Users\thabi\NeoSave\NeoSave.API\obj\Debug\net9.0\rjsmcshtml.dswa.cache.json
@@ -172,6 +176,3 @@ C:\Users\thabi\NeoSave\NeoSave.API\obj\Debug\net9.0\refint\NeoSave.API.dll
 C:\Users\thabi\NeoSave\NeoSave.API\obj\Debug\net9.0\NeoSave.API.pdb
 C:\Users\thabi\NeoSave\NeoSave.API\obj\Debug\net9.0\NeoSave.API.genruntimeconfig.cache
 C:\Users\thabi\NeoSave\NeoSave.API\obj\Debug\net9.0\ref\NeoSave.API.dll
-C:\Users\thabi\NeoSave\NeoSave.API\obj\Debug\net9.0\NeoSave.API.sourcelink.json
-C:\Users\thabi\NeoSave\NeoSave.API\bin\Debug\net9.0\Npgsql.dll
-C:\Users\thabi\NeoSave\NeoSave.API\bin\Debug\net9.0\Npgsql.EntityFrameworkCore.PostgreSQL.dll

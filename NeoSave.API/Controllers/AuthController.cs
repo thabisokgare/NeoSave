@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 using NeoSave.Application.DTOs.Auth;
 using NeoSave.Domain.Entities;
 using NeoSave.Application.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 
 namespace NeoSave.API.Controllers
 {
@@ -20,7 +21,7 @@ namespace NeoSave.API.Controllers
             _authService = authService;
         }
 
-
+        [AllowAnonymous]
         [HttpPost("register")]
         public async Task<IActionResult> Register(RegisterRequest request)
         {
@@ -28,15 +29,18 @@ namespace NeoSave.API.Controllers
             return Ok(new { message = result });
         }
 
+        [AllowAnonymous]
         [HttpPost("login")]
         public async Task<IActionResult> Login(LoginRequest request)
         {
-            // Implement login logic here
-            var result = await _authService.LoginAsync(request);
-            // For now, just return a placeholder message
-            return Ok(new { message = "Login functionality not implemented yet." });
+            var token = await _authService.LoginAsync(request);
+
+            if (token == null)
+                return Unauthorized(new { message = "Invalid email or password." });
+
+            return Ok(new { token });
         }
 
-        
+
     }
 }

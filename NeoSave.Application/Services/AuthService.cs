@@ -1,39 +1,39 @@
-using NeoSave.Infrastructure.Data; // Add this at the top
-using NeoSave.Application.Interfaces;
-using NeoSave.Application.DTOs.Auth;
-using System.Security.Cryptography;
 using System.Text;
-using NeoSave.Domain.Entities;
+using System.Security.Claims;
+using System.Security.Cryptography;
+using System.IdentityModel.Tokens.Jwt;
+using Microsoft.IdentityModel.Tokens;
 using Microsoft.EntityFrameworkCore;
-// Add this at the top
-
-
+using Microsoft.Extensions.Configuration;
+using NeoSave.Domain.Entities;
+using NeoSave.Infrastructure.Data;
+using NeoSave.Application.DTOs.Auth;
+using NeoSave.Application.Interfaces;
 
 namespace NeoSave.Application.Services
 {
     public class AuthService : IAuthService
     {
         private readonly NeoSaveDbContext _context;
+        private readonly IConfiguration _configuration;
 
-        public AuthService(NeoSaveDbContext context)
+        public AuthService(NeoSaveDbContext context, IConfiguration configuration)
         {
             _context = context;
+            _configuration = configuration;
         }
 
-
-
-        public async Task<string> RegisterAsync(RegisterRequest request)
+        public async Task<string?> RegisterAsync(RegisterRequest request)
         {
             // 1. Check if user already exists
             var existingUser = await _context.Users.FirstOrDefaultAsync(u => u.Email == request.Email);
-
             if (existingUser != null)
                 return "A user with this email already exists.";
 
             // 2. Hash the password
             var passwordHash = HashPassword(request.Password);
 
-            // 3. Create the new user entity
+            // 3. Create new user entity
             var user = new User
             {
                 FullName = request.FullName,
@@ -49,6 +49,21 @@ namespace NeoSave.Application.Services
             return $"User {user.FullName} registered successfully.";
         }
 
+        public async Task<string?> LoginAsync(LoginRequest request)
+        {
+            // 1. Find the user by email
+            var user = await _context.Users.FirstOrDefaultAsync(u => u.Email == request.Email);
+            if (user == null)
+                return null;
+
+            // 2. Verify the password
+            var hashedPassword = HashPassword(request.Password);
+            if (hashedPassword != user.PasswordHash)
+                return null;
+
+            // 3. Generate and return token
+            return GenerateToken(user);
+        }
 
         private string HashPassword(string password)
         {
@@ -57,26 +72,27 @@ namespace NeoSave.Application.Services
             var hash = sha256.ComputeHash(bytes);
             return Convert.ToBase64String(hash);
         }
-        
 
-
-        public async Task LoginAsync(LoginRequest request)
+        private string GenerateToken(User user)
         {
-            // 1. Find the user by email
-            var user = await _context.Users.FirstOrDefaultAsync(u => u.Email == request.Email);
-            if (user == null)
-                return;
+            var claims = new List<Claim>
+            {
+                new Claim(ClaimTypes.Name, user.FullName),
+                new Claim(ClaimTypes.Email, user.Email)
+            };
 
-            // 2. Verify the password
-            var hashedPassword = HashPassword(request.Password);
-            if (hashedPassword != user.PasswordHash)
-                return;
+            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Jwt:Key"]!));
+            var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
 
-            // 3. Generate a token (for simplicity, returning a dummy token here)
-            
-            // You may want to handle token logic here
-            return;
+            var token = new JwtSecurityToken(
+                issuer: _configuration["Jwt:Issuer"],
+                audience: _configuration["Jwt:Audience"],
+                claims: claims,
+                expires: DateTime.UtcNow.AddMinutes(30),
+                signingCredentials: creds
+            );
+
+            return new JwtSecurityTokenHandler().WriteToken(token);
         }
     }
-
 }

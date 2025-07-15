@@ -9,10 +9,10 @@ C:\Users\thabi\NeoSave\NeoSave.Infrastructure\obj\Debug\net9.0\NeoSave.Infrastru
 C:\Users\thabi\NeoSave\NeoSave.Infrastructure\obj\Debug\net9.0\NeoSave.Infrastructure.AssemblyInfoInputs.cache
 C:\Users\thabi\NeoSave\NeoSave.Infrastructure\obj\Debug\net9.0\NeoSave.Infrastructure.AssemblyInfo.cs
 C:\Users\thabi\NeoSave\NeoSave.Infrastructure\obj\Debug\net9.0\NeoSave.Infrastructure.csproj.CoreCompileInputs.cache
+C:\Users\thabi\NeoSave\NeoSave.Infrastructure\obj\Debug\net9.0\NeoSave.Infrastructure.sourcelink.json
 C:\Users\thabi\NeoSave\NeoSave.Infrastructure\obj\Debug\net9.0\NeoSave..82200992.Up2Date
 C:\Users\thabi\NeoSave\NeoSave.Infrastructure\obj\Debug\net9.0\NeoSave.Infrastructure.dll
 C:\Users\thabi\NeoSave\NeoSave.Infrastructure\obj\Debug\net9.0\refint\NeoSave.Infrastructure.dll
 C:\Users\thabi\NeoSave\NeoSave.Infrastructure\obj\Debug\net9.0\NeoSave.Infrastructure.pdb
 C:\Users\thabi\NeoSave\NeoSave.Infrastructure\obj\Debug\net9.0\NeoSave.Infrastructure.genruntimeconfig.cache
 C:\Users\thabi\NeoSave\NeoSave.Infrastructure\obj\Debug\net9.0\ref\NeoSave.Infrastructure.dll
-C:\Users\thabi\NeoSave\NeoSave.Infrastructure\obj\Debug\net9.0\NeoSave.Infrastructure.sourcelink.json
