@@ -62,9 +62,9 @@ builder.Services.AddScoped<IBudgetService, BudgetService>();
 // 5. Add CORS for frontend integration
 builder.Services.AddCors(options =>
 {
-    options.AddPolicy("AllowReactApp",
+    options.AddPolicy("AllowFrontend",
         policy => policy
-            .WithOrigins("http://localhost:3000", "https://localhost:3001") // Add your frontend URLs
+            .WithOrigins("http://localhost:3000") // Add your frontend URLs
             .AllowAnyHeader()
             .AllowAnyMethod()
             .AllowCredentials());
@@ -114,7 +114,7 @@ if (app.Environment.IsDevelopment())
 }
 
 // 8. Add CORS middleware (must be before authentication)
-app.UseCors("AllowReactApp");
+app.UseCors("AllowFrontend");
 
 // 9. Add authentication/authorization middleware (order matters!)
 app.UseAuthentication(); // <-- Must come before UseAuthorization
