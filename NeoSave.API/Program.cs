@@ -2,25 +2,75 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
+using System.Text.Json.Serialization;
 using NeoSave.Application.Interfaces;
 using NeoSave.Application.Services;
 using NeoSave.Infrastructure.Data;
+using Microsoft.Extensions.DependencyInjection;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // 1. Add services to the container
-builder.Services.AddControllers();
+builder.Services.AddControllers()
+    .AddJsonOptions(options =>
+    {
+        // This makes enums serialize as strings instead of numbers
+        options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
+    });
+
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+builder.Services.AddSwaggerGen(c =>
+{
+    c.SwaggerDoc("v1", new() { Title = "NeoSave API", Version = "v1" });
+
+    var jwtSecurityScheme = new Microsoft.OpenApi.Models.OpenApiSecurityScheme
+    {
+        BearerFormat = "JWT",
+        Name = "Authorization",
+        In = Microsoft.OpenApi.Models.ParameterLocation.Header,
+        Type = Microsoft.OpenApi.Models.SecuritySchemeType.Http,
+        Scheme = JwtBearerDefaults.AuthenticationScheme,
+        Description = "Enter JWT Bearer token **_only_**",
+        Reference = new Microsoft.OpenApi.Models.OpenApiReference
+        {
+            Id = JwtBearerDefaults.AuthenticationScheme,
+            Type = Microsoft.OpenApi.Models.ReferenceType.SecurityScheme
+        }
+    };
+
+    c.AddSecurityDefinition(jwtSecurityScheme.Reference.Id, jwtSecurityScheme);
+    c.AddSecurityRequirement(new Microsoft.OpenApi.Models.OpenApiSecurityRequirement
+    {
+        { jwtSecurityScheme, Array.Empty<string>() }
+    });
+});
 
 // 2. Database
 builder.Services.AddDbContext<NeoSaveDbContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
 
-// 3. Register your custom services
-builder.Services.AddScoped<IAuthService, AuthService>();
+// 3. Register AutoMapper (more targeted approach)
+builder.Services.AddAutoMapper(config =>
+{
+    config.AddMaps(AppDomain.CurrentDomain.GetAssemblies());
+});
 
-// 4. Configure JWT Authentication
+// 4. Register your custom services
+builder.Services.AddScoped<IAuthService, AuthService>();
+builder.Services.AddScoped<IBudgetService, BudgetService>();
+
+// 5. Add CORS for frontend integration
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowReactApp",
+        policy => policy
+            .WithOrigins("http://localhost:3000", "https://localhost:3001") // Add your frontend URLs
+            .AllowAnyHeader()
+            .AllowAnyMethod()
+            .AllowCredentials());
+});
+
+// 6. Configure JWT Authentication
 var jwtSettings = builder.Configuration.GetSection("Jwt");
 builder.Services.AddAuthentication(options =>
 {
@@ -29,7 +79,7 @@ builder.Services.AddAuthentication(options =>
 })
 .AddJwtBearer(options =>
 {
-    options.RequireHttpsMetadata = false;
+    options.RequireHttpsMetadata = false; // Set to true in production
     options.SaveToken = true;
     options.TokenValidationParameters = new TokenValidationParameters
     {
@@ -37,7 +87,6 @@ builder.Services.AddAuthentication(options =>
         ValidateAudience = true,
         ValidateLifetime = true,
         ValidateIssuerSigningKey = true,
-
         ValidIssuer = jwtSettings["Issuer"],
         ValidAudience = jwtSettings["Audience"],
         IssuerSigningKey = new SymmetricSecurityKey(
@@ -47,22 +96,30 @@ builder.Services.AddAuthentication(options =>
 
 var app = builder.Build();
 
-// Optional: Apply migrations automatically
-
-using (var scope = app.Services.CreateScope())
+// Auto-migration (development only)
+if (app.Environment.IsDevelopment())
 {
-    var dbContext = scope.ServiceProvider.GetRequiredService<NeoSaveDbContext>();
-    dbContext.Database.Migrate();
+    using (var scope = app.Services.CreateScope())
+    {
+        var dbContext = scope.ServiceProvider.GetRequiredService<NeoSaveDbContext>();
+        dbContext.Database.Migrate();
+    }
 }
 
+// 7. Configure the HTTP request pipeline
+if (app.Environment.IsDevelopment())
+{
+    app.UseSwagger();
+    app.UseSwaggerUI();
+}
 
-// 5. Configure the HTTP request pipeline
-app.UseSwagger();
-app.UseSwaggerUI();
+// 8. Add CORS middleware (must be before authentication)
+app.UseCors("AllowReactApp");
 
-// 6. Add authentication/authorization middleware (order matters!)
+// 9. Add authentication/authorization middleware (order matters!)
 app.UseAuthentication(); // <-- Must come before UseAuthorization
 app.UseAuthorization();
 
 app.MapControllers();
+
 app.Run();
