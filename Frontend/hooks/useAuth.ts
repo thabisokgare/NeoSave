@@ -1,9 +1,12 @@
 import { useState } from "react"
 
+
+
 export function useAuth() {
-  const [token, setToken] = useState<string | null>(() =>
+  const getStoredToken = () =>
     typeof window !== "undefined" ? localStorage.getItem("jwt") : null
-  )
+
+  const [token, setToken] = useState<string | null>(getStoredToken)
 
   const login = async (email: string, password: string) => {
     const res = await fetch("http://localhost:8088/api/auth/login", {
@@ -12,6 +15,7 @@ export function useAuth() {
       body: JSON.stringify({ email, password }),
     })
     if (!res.ok) throw new Error("Login failed")
+
     const data = await res.json()
     localStorage.setItem("jwt", data.token)
     setToken(data.token)
@@ -29,4 +33,4 @@ export function useAuth() {
     token ? { Authorization: `Bearer ${token}` } : {}
 
   return { token, login, logout, isAuthenticated, getAuthHeader }
-} 
+}
