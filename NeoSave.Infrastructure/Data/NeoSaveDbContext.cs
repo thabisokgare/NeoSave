@@ -17,6 +17,9 @@ namespace NeoSave.Infrastructure.Data
 
         public DbSet<User> Users { get; set; }
         public DbSet<Budget> Budgets { get; set; }
+        public DbSet<Goal> Goals { get; set; }
+        public DbSet<Investment> Investments { get; set; }
+        public DbSet<Transaction> Transactions { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -66,6 +69,46 @@ namespace NeoSave.Infrastructure.Data
                 // Index for better query performance
                 entity.HasIndex(b => b.UserId);
                 entity.HasIndex(b => b.Category);
+            });
+
+            // Goal entity configuration
+            modelBuilder.Entity<Goal>(entity =>
+            {
+                entity.Property(g => g.Id).HasColumnType("uuid");
+                entity.Property(g => g.UserId).HasColumnType("uuid");
+                entity.Property(g => g.Title).HasMaxLength(100).IsRequired();
+                entity.Property(g => g.TargetAmount).HasColumnType("decimal(18,2)").IsRequired();
+                entity.Property(g => g.CurrentAmount).HasColumnType("decimal(18,2)").IsRequired();
+                entity.Property(g => g.DueDate).IsRequired();
+                entity.Property(g => g.CreatedAt).HasDefaultValueSql("CURRENT_TIMESTAMP");
+                entity.HasOne<User>().WithMany().HasForeignKey(g => g.UserId).OnDelete(DeleteBehavior.Cascade);
+                entity.HasIndex(g => g.UserId);
+            });
+
+            // Investment entity configuration
+            modelBuilder.Entity<Investment>(entity =>
+            {
+                entity.Property(i => i.Id).HasColumnType("uuid");
+                entity.Property(i => i.UserId).HasColumnType("uuid");
+                entity.Property(i => i.Name).HasMaxLength(100).IsRequired();
+                entity.Property(i => i.Type).HasMaxLength(50).IsRequired();
+                entity.Property(i => i.Amount).HasColumnType("decimal(18,2)").IsRequired();
+                entity.Property(i => i.CreatedAt).HasDefaultValueSql("CURRENT_TIMESTAMP");
+                entity.HasOne<User>().WithMany().HasForeignKey(i => i.UserId).OnDelete(DeleteBehavior.Cascade);
+                entity.HasIndex(i => i.UserId);
+            });
+
+            // Transaction entity configuration
+            modelBuilder.Entity<Transaction>(entity =>
+            {
+                entity.Property(t => t.Id).HasColumnType("uuid");
+                entity.Property(t => t.UserId).HasColumnType("uuid");
+                entity.Property(t => t.Amount).HasColumnType("decimal(18,2)").IsRequired();
+                entity.Property(t => t.Type).HasMaxLength(20).IsRequired();
+                entity.Property(t => t.Date).IsRequired();
+                entity.Property(t => t.Category).HasMaxLength(50);
+                entity.HasOne<User>().WithMany().HasForeignKey(t => t.UserId).OnDelete(DeleteBehavior.Cascade);
+                entity.HasIndex(t => t.UserId);
             });
         }
     }

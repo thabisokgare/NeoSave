@@ -1,44 +1,110 @@
+"use client"
+
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { TrendingUp, TrendingDown, DollarSign, BarChart3, Lock } from "lucide-react"
+import { useEffect, useState } from "react"
+import { useApiData } from "@/hooks/useApiData"
 
-const investmentTypes = [
-  {
-    id: 1,
-    title: "Stocks",
-    description: "Invest in individual company shares",
-    icon: TrendingUp,
-    status: "coming_soon",
-    features: ["Real-time quotes", "Portfolio tracking", "Research tools"],
-  },
-  {
-    id: 2,
-    title: "Cryptocurrency",
-    description: "Digital currency investments",
-    icon: BarChart3,
-    status: "coming_soon",
-    features: ["Major cryptocurrencies", "Price alerts", "Market analysis"],
-  },
-  {
-    id: 3,
-    title: "Bonds",
-    description: "Government and corporate bonds",
-    icon: DollarSign,
-    status: "coming_soon",
-    features: ["Fixed income", "Low risk", "Steady returns"],
-  },
-  {
-    id: 4,
-    title: "ETFs",
-    description: "Exchange-traded funds",
-    icon: TrendingDown,
-    status: "coming_soon",
-    features: ["Diversified portfolios", "Low fees", "Professional management"],
-  },
-]
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:8088/api"
 
 export default function InvestmentsPage() {
+  const { data: investments, loading, error } = useApiData<any[]>(`${API_BASE_URL}/investment`)
+  const [isAddDialogOpen, setIsAddDialogOpen] = useState(false)
+  const [isEditDialogOpen, setIsEditDialogOpen] = useState(false)
+  const [form, setForm] = useState({ name: "", type: "", amount: "", description: "" })
+  const [editInvestment, setEditInvestment] = useState<any | null>(null)
+  const [refresh, setRefresh] = useState(0)
+  const [actionError, setActionError] = useState<string | null>(null)
+
+  const { data: freshInvestments, loading: freshLoading, error: freshError } = useApiData<any[]>(`${API_BASE_URL}/investment?refresh=${refresh}`)
+
+  const handleInputChange = (e: any) => {
+    setForm({ ...form, [e.target.name]: e.target.value })
+  }
+
+  const handleAddInvestment = async () => {
+    setActionError(null)
+    try {
+      const res = await fetch(`${API_BASE_URL}/investment`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          name: form.name,
+          type: form.type,
+          amount: parseFloat(form.amount),
+          description: form.description,
+        }),
+        credentials: "include",
+      })
+      if (!res.ok) throw new Error("Failed to add investment")
+      setIsAddDialogOpen(false)
+      setForm({ name: "", type: "", amount: "", description: "" })
+      setRefresh((r) => r + 1)
+    } catch (err: any) {
+      setActionError(err.message)
+    }
+  }
+
+  const handleEditInvestment = (investment: any) => {
+    setEditInvestment(investment)
+    setForm({
+      name: investment.name,
+      type: investment.type,
+      amount: investment.amount,
+      description: investment.description,
+    })
+    setIsEditDialogOpen(true)
+  }
+
+  const handleUpdateInvestment = async () => {
+    setActionError(null)
+    try {
+      const res = await fetch(`${API_BASE_URL}/investment/${editInvestment.id}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          name: form.name,
+          type: form.type,
+          amount: parseFloat(form.amount),
+          description: form.description,
+        }),
+        credentials: "include",
+      })
+      if (!res.ok) throw new Error("Failed to update investment")
+      setIsEditDialogOpen(false)
+      setEditInvestment(null)
+      setForm({ name: "", type: "", amount: "", description: "" })
+      setRefresh((r) => r + 1)
+    } catch (err: any) {
+      setActionError(err.message)
+    }
+  }
+
+  const handleDeleteInvestment = async (id: string) => {
+    setActionError(null)
+    if (!window.confirm("Are you sure you want to delete this investment?")) return
+    try {
+      const res = await fetch(`${API_BASE_URL}/investment/${id}`, {
+        method: "DELETE",
+        credentials: "include",
+      })
+      if (!res.ok) throw new Error("Failed to delete investment")
+      setRefresh((r) => r + 1)
+    } catch (err: any) {
+      setActionError(err.message)
+    }
+  }
+
+  const displayedInvestments = freshInvestments || investments
+  const isLoading = freshLoading || loading
+  const displayError = freshError || error
+
+  if (isLoading) return <div>Loading investments...</div>
+  if (displayError) return <div className="text-destructive-500">Error: {displayError}</div>
+  if (!displayedInvestments || !displayedInvestments.length) return <div>No investments found. Start by adding a new investment!</div>
+
   return (
     <div className="space-y-6">
       {/* Header */}
@@ -68,37 +134,34 @@ export default function InvestmentsPage() {
 
       {/* Investment Types Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        {investmentTypes.map((investment) => (
+        {displayedInvestments.map((investment) => (
           <Card key={investment.id} className="relative overflow-hidden">
             <CardHeader>
               <div className="flex items-center justify-between">
                 <div className="flex items-center space-x-3">
                   <div className="p-2 bg-muted rounded-lg">
-                    <investment.icon className="h-6 w-6 text-muted-foreground" />
+                    {/* Optionally use an icon based on investment.type */}
                   </div>
                   <div>
-                    <CardTitle className="text-lg">{investment.title}</CardTitle>
+                    <CardTitle className="text-lg">{investment.name}</CardTitle>
                     <CardDescription>{investment.description}</CardDescription>
                   </div>
                 </div>
-                <Badge variant="secondary">Coming Soon</Badge>
+                <Badge variant="secondary">{investment.type}</Badge>
               </div>
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
                 <div>
-                  <h4 className="font-medium mb-2">Features:</h4>
-                  <ul className="space-y-1">
-                    {investment.features.map((feature, index) => (
-                      <li key={index} className="text-sm text-muted-foreground flex items-center">
-                        <div className="w-1.5 h-1.5 bg-gray-400 rounded-full mr-2"></div>
-                        {feature}
-                      </li>
-                    ))}
-                  </ul>
+                  <h4 className="font-medium mb-2">Amount:</h4>
+                  <div className="text-2xl font-bold">R{investment.amount.toLocaleString()}</div>
+                </div>
+                <div>
+                  <h4 className="font-medium mb-2">Created At:</h4>
+                  <div className="text-sm text-muted-foreground">{new Date(investment.createdAt).toLocaleDateString()}</div>
                 </div>
                 <Button disabled className="w-full">
-                  Get Notified
+                  Edit Investment
                 </Button>
               </div>
             </CardContent>

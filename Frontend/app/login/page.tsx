@@ -15,6 +15,7 @@ import Link from "next/link"
 import { useRouter } from "next/navigation"
 import { toast } from "sonner"
 import { Wallet, Eye, EyeOff, ArrowLeft } from "lucide-react"
+import { useAuth } from "@/hooks/useAuth"
 
 const loginSchema = z.object({
   email: z.string().email("Please enter a valid email address"),
@@ -28,6 +29,7 @@ export default function LoginPage() {
   const [isLoading, setIsLoading] = useState(false)
   const [showPassword, setShowPassword] = useState(false)
   const router = useRouter()
+  const { login } = useAuth()
 
   const {
     register,
@@ -39,29 +41,12 @@ export default function LoginPage() {
 
   const onSubmit = async (data: LoginForm) => {
     setIsLoading(true)
-
     try {
-      // API call to /api/auth/login
-      const response = await fetch("/api/auth/login", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          email: data.email,
-          password: data.password,
-        }),
-      })
-
-      if (response.ok) {
-        toast.success("Welcome back!")
-        router.push("/dashboard")
-      } else {
-        const error = await response.json()
-        toast.error(error.message || "Invalid credentials")
-      }
-    } catch (error) {
-      toast.error("Login failed. Please try again.")
+      await login(data.email, data.password)
+      toast.success("Welcome back!")
+      router.push("/dashboard")
+    } catch (error: any) {
+      toast.error(error.message || "Invalid credentials")
     } finally {
       setIsLoading(false)
     }

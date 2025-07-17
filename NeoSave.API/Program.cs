@@ -58,6 +58,10 @@ builder.Services.AddAutoMapper(config =>
 // 4. Register your custom services
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IBudgetService, BudgetService>();
+// Register new services
+builder.Services.AddScoped<IGoalService, GoalService>();
+builder.Services.AddScoped<IInvestmentService, InvestmentService>();
+builder.Services.AddScoped<ITransactionService, TransactionService>();
 
 // 5. Add CORS for frontend integration
 builder.Services.AddCors(options =>

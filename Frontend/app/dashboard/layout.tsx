@@ -29,6 +29,9 @@ import {
   Wallet,
 } from "lucide-react"
 import { cn } from "@/lib/utils"
+import { useAuth } from "@/hooks/useAuth"
+import { useEffect } from "react"
+import { useRouter } from "next/navigation"
 
 const navigation = [
   { name: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
@@ -39,11 +42,16 @@ const navigation = [
   { name: "Learning", href: "/dashboard/learning", icon: User },
 ]
 
-export default function DashboardLayout({
-  children,
-}: {
-  children: React.ReactNode
-}) {
+export default function DashboardLayout({ children }: { children: React.ReactNode }) {
+  const { isAuthenticated } = useAuth()
+  const router = useRouter()
+
+  useEffect(() => {
+    if (!isAuthenticated) {
+      router.push("/login")
+    }
+  }, [isAuthenticated, router])
+
   const [sidebarOpen, setSidebarOpen] = useState(false)
   const pathname = usePathname()
 

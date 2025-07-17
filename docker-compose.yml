@@ -1,20 +1,19 @@
-version: '3.8'
 
 services:
   db:
-    image: postgres:15-alpine  # Use lighter Alpine version
+    image: postgres:17-alpine # Use lighter Alpine version
     container_name: neosave_db
     environment:
       POSTGRES_USER: "postgres"
       POSTGRES_PASSWORD: "Kgar3@#!"
       POSTGRES_DB: "NeoSave"
     ports:
-      - "5433:5432"
+      - "5432:5432"
     restart: always
     volumes:
       - sqlvolume:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      test: [ "CMD-SHELL", "pg_isready -U postgres" ]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -22,7 +21,7 @@ services:
   api:
     build:
       context: .
-      dockerfile: NeoSave.API/Dockerfile
+      dockerfile: Dockerfile
       # Enable BuildKit features
       args:
         BUILDKIT_INLINE_CACHE: 1
@@ -35,6 +34,8 @@ services:
       ASPNETCORE_ENVIRONMENT: Development
       ASPNETCORE_URLS: "http://+:80"
       ConnectionStrings__DefaultConnection: "Server=db;Port=5432;Database=NeoSave;User ID=postgres;Password=Kgar3@#!;Pooling=true;"
+    restart: always
+    
 
   frontend:
     build:
@@ -51,6 +52,8 @@ services:
       - NODE_ENV=production
     depends_on:
       - api
+    restart: always
+    
 
 volumes:
   sqlvolume:
