@@ -1,7 +1,8 @@
 
+
 services:
   db:
-    image: postgres:17-alpine # Use lighter Alpine version
+    image: postgres:17-alpine
     container_name: neosave_db
     environment:
       POSTGRES_USER: "postgres"
@@ -21,8 +22,7 @@ services:
   api:
     build:
       context: .
-      dockerfile: Dockerfile
-      # Enable BuildKit features
+      dockerfile: NeoSave.API/Dockerfile
       args:
         BUILDKIT_INLINE_CACHE: 1
     ports:
@@ -35,25 +35,22 @@ services:
       ASPNETCORE_URLS: "http://+:80"
       ConnectionStrings__DefaultConnection: "Server=db;Port=5432;Database=NeoSave;User ID=postgres;Password=Kgar3@#!;Pooling=true;"
     restart: always
-    
 
   frontend:
     build:
       context: ./Frontend
       dockerfile: Dockerfile
-      # Enable BuildKit caching
-      cache_from:
-        - node:20-alpine
       args:
         BUILDKIT_INLINE_CACHE: 1
     ports:
       - "3000:3000"
     environment:
-      - NODE_ENV=production
+      NODE_ENV: production
+      NEXT_PUBLIC_API: http://localhost:8088/api # optional: adjust as needed
     depends_on:
       - api
     restart: always
-    
 
 volumes:
   sqlvolume:
+    

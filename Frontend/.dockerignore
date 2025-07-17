@@ -1,10 +1,30 @@
+# Dependency directories
 node_modules
+.pnpm
+.pnpm-store
+
+# Build output
 .next
 dist
 build
+
+# Docker-specific
 Dockerfile
 .dockerignore
+
+# Git-related
 .git
 .gitignore
+
+# Editor configs
 .vscode
-*.log 
+.idea
+
+# Logs
+*.log
+npm-debug.log*
+pnpm-debug.log*
+
+# OS junk
+.DS_Store
+Thumbs.db
