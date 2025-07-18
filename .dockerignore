@@ -1,21 +1,24 @@
-# Exclude local node_modules from being sent to Docker
-**/node_modules
-**/.pnpm
-**/.next
-**/dist
-**/build
-
-# Git & IDE
+bin
+obj
+.vscode
 .git
 .gitignore
-.vscode
-.idea
-
-# Docker
 Dockerfile
 .dockerignore
-
-# Logs & OS clutter
 *.log
-.DS_Store
-Thumbs.db
+NeoSave.API/bin
+NeoSave.API/obj
+NeoSave.Application/bin
+NeoSave.Application/obj
+NeoSave.Domain/bin
+NeoSave.Domain/obj
+NeoSave.Infrastructure/bin
+NeoSave.Infrastructure/obj
+Frontend/node_modules
+Frontend/.next
+Frontend/dist
+Frontend/build
+NeoSave.Client/node_modules
+NeoSave.Client/.next
+NeoSave.Client/dist
+NeoSave.Client/build

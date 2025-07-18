@@ -1,5 +1,15 @@
-
-
+# Docker Compose for NeoSave
+# Use .env and .env.local for secrets and URLs
+# Example .env:
+# POSTGRES_USER=postgres
+# POSTGRES_PASSWORD=yourpassword
+# POSTGRES_DB=NeoSave
+# NEXT_PUBLIC_API_BASE_URL=http://api/api
+# ASPNETCORE_ENVIRONMENT=Production
+#
+# To override for local dev, use .env.local
+#
+# Do not hardcode secrets or dev URLs below!
 services:
   db:
     image: postgres:17-alpine
@@ -34,6 +44,9 @@ services:
       ASPNETCORE_ENVIRONMENT: Development
       ASPNETCORE_URLS: "http://+:80"
       ConnectionStrings__DefaultConnection: "Server=db;Port=5432;Database=NeoSave;User ID=postgres;Password=Kgar3@#!;Pooling=true;"
+      Jwt__Key: "your-very-secret-key-please-change-this-in-production-1234567890"
+      Jwt__Issuer: "NeoSaveAPI"
+      Jwt__Audience: "NeoSaveFrontend"
     restart: always
 
   frontend:
@@ -46,11 +59,10 @@ services:
       - "3000:3000"
     environment:
       NODE_ENV: production
-      NEXT_PUBLIC_API: http://api/api # optional: adjust as needed
+      NEXT_PUBLIC_API_BASE_URL: http://api/api
     depends_on:
       - api
     restart: always
 
 volumes:
   sqlvolume:
-    

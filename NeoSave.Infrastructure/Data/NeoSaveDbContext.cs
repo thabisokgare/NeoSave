@@ -8,18 +8,14 @@ using NeoSave.Domain.Enums;
 
 namespace NeoSave.Infrastructure.Data
 {
-    public class NeoSaveDbContext : DbContext
+    public class NeoSaveDbContext(DbContextOptions<NeoSaveDbContext> options) : DbContext(options)
     {
-        public NeoSaveDbContext(DbContextOptions<NeoSaveDbContext> options)
-            : base(options)
-        {
-        }
-
         public DbSet<User> Users { get; set; }
         public DbSet<Budget> Budgets { get; set; }
         public DbSet<Goal> Goals { get; set; }
         public DbSet<Investment> Investments { get; set; }
         public DbSet<Transaction> Transactions { get; set; }
+        public DbSet<NeoSave.Domain.Entities.SurveyResponse> SurveyResponses { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -110,6 +106,8 @@ namespace NeoSave.Infrastructure.Data
                 entity.HasOne<User>().WithMany().HasForeignKey(t => t.UserId).OnDelete(DeleteBehavior.Cascade);
                 entity.HasIndex(t => t.UserId);
             });
+
+            modelBuilder.ApplyConfiguration(new Configurations.SurveyResponseConfiguration());
         }
     }
 }

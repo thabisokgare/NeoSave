@@ -62,6 +62,7 @@ builder.Services.AddScoped<IBudgetService, BudgetService>();
 builder.Services.AddScoped<IGoalService, GoalService>();
 builder.Services.AddScoped<IInvestmentService, InvestmentService>();
 builder.Services.AddScoped<ITransactionService, TransactionService>();
+builder.Services.AddScoped<ISurveyService, SurveyService>();
 
 // 5. Add CORS for frontend integration
 builder.Services.AddCors(options =>
@@ -103,11 +104,9 @@ var app = builder.Build();
 // Auto-migration (development only)
 if (app.Environment.IsDevelopment())
 {
-    using (var scope = app.Services.CreateScope())
-    {
-        var dbContext = scope.ServiceProvider.GetRequiredService<NeoSaveDbContext>();
-        dbContext.Database.Migrate();
-    }
+    using var scope = app.Services.CreateScope();
+    var dbContext = scope.ServiceProvider.GetRequiredService<NeoSaveDbContext>();
+    dbContext.Database.Migrate();
 }
 
 // 7. Configure the HTTP request pipeline

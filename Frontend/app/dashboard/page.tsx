@@ -4,41 +4,110 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Progress } from "@/components/ui/progress"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
-import { ArrowUpIcon, DollarSign, TrendingUp, Target, CreditCard } from "lucide-react"
+import { ArrowUpIcon, DollarSign, TrendingUp, Target, CreditCard, LineChart } from "lucide-react"
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, ResponsiveContainer, PieChart, Pie, Cell } from "recharts"
+import { useApiData } from "@/hooks/useApiData"
+import { useEffect, useState } from "react"
 
-const monthlyData = [
-  { month: "Jan", income: 5000, expenses: 3200 },
-  { month: "Feb", income: 5200, expenses: 3400 },
-  { month: "Mar", income: 4800, expenses: 3100 },
-  { month: "Apr", income: 5500, expenses: 3600 },
-  { month: "May", income: 5300, expenses: 3300 },
-  { month: "Jun", income: 5600, expenses: 3500 },
+// Default empty data structures
+const emptyMonthlyData = [
+  { month: "Jan", income: 0, expenses: 0 },
+  { month: "Feb", income: 0, expenses: 0 },
+  { month: "Mar", income: 0, expenses: 0 },
+  { month: "Apr", income: 0, expenses: 0 },
+  { month: "May", income: 0, expenses: 0 },
+  { month: "Jun", income: 0, expenses: 0 },
 ]
 
-const categoryData = [
-  { name: "Food", value: 800, color: "hsl(var(--primary))" },
-  { name: "Transport", value: 400, color: "hsl(var(--accent))" },
-  { name: "Entertainment", value: 300, color: "hsl(var(--secondary))" },
-  { name: "Utilities", value: 500, color: "hsl(var(--destructive))" },
-  { name: "Shopping", value: 600, color: "hsl(var(--primary-foreground))" },
+const emptyCategoryData = [
+  { name: "No Data", value: 1, color: "hsl(var(--muted))" },
 ]
 
-const recentTransactions = [
-  { id: 1, title: "Grocery Store", amount: -85.5, category: "Food", date: "2024-01-15", type: "expense" },
-  { id: 2, title: "Salary Deposit", amount: 5000, category: "Income", date: "2024-01-15", type: "income" },
-  { id: 3, title: "Gas Station", amount: -45.2, category: "Transport", date: "2024-01-14", type: "expense" },
-  { id: 4, title: "Netflix", amount: -15.99, category: "Entertainment", date: "2024-01-14", type: "expense" },
-  { id: 5, title: "Freelance Work", amount: 800, category: "Income", date: "2024-01-13", type: "income" },
-]
-
-const savingsGoals = [
-  { id: 1, title: "Emergency Fund", current: 3500, target: 10000, progress: 35 },
-  { id: 2, title: "Vacation", current: 1200, target: 3000, progress: 40 },
-  { id: 3, title: "New Car", current: 8500, target: 25000, progress: 34 },
+const defaultColors = [
+  "hsl(var(--primary))",
+  "hsl(var(--accent))",
+  "hsl(var(--secondary))",
+  "hsl(var(--destructive))",
+  "hsl(var(--primary-foreground))",
 ]
 
 export default function DashboardPage() {
+  // Fetch transactions data
+  const { data: transactionsData, loading: transactionsLoading } = useApiData('/api/transaction');
+  const { data: goalsData, loading: goalsLoading } = useApiData('/api/goal');
+  
+  // State for processed data
+  const [monthlyData, setMonthlyData] = useState(emptyMonthlyData);
+  const [categoryData, setCategoryData] = useState(emptyCategoryData);
+  const [recentTransactions, setRecentTransactions] = useState<any[]>([]);
+  const [savingsGoals, setSavingsGoals] = useState<any[]>([]);
+  const [summaryData, setSummaryData] = useState({
+    balance: 0,
+    income: 0,
+    expenses: 0,
+    savingsRate: 0
+  });
+
+  // Process transactions data when it loads
+  useEffect(() => {
+    if (transactionsData && Array.isArray(transactionsData)) {
+      // Recent transactions - take the 5 most recent
+      const recent = [...transactionsData]
+        .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
+        .slice(0, 5);
+      setRecentTransactions(recent);
+
+      // Calculate summary data
+      const income = transactionsData
+        .filter(t => t.type === 'income')
+        .reduce((sum, t) => sum + t.amount, 0);
+      
+      const expenses = transactionsData
+        .filter(t => t.type === 'expense')
+        .reduce((sum, t) => sum + Math.abs(t.amount), 0);
+      
+      const balance = income - expenses;
+      const savingsRate = income > 0 ? ((income - expenses) / income) * 100 : 0;
+
+      setSummaryData({
+        balance,
+        income,
+        expenses,
+        savingsRate
+      });
+
+      // Process category data
+      const categories: Record<string, number> = {};
+      transactionsData
+        .filter(t => t.type === 'expense')
+        .forEach(t => {
+          if (!categories[t.category]) categories[t.category] = 0;
+          categories[t.category] += Math.abs(t.amount);
+        });
+
+      const categoryDataArray = Object.entries(categories).map(([name, value], index) => ({
+        name,
+        value,
+        color: defaultColors[index % defaultColors.length]
+      }));
+
+      setCategoryData(categoryDataArray.length > 0 ? categoryDataArray : emptyCategoryData);
+    }
+  }, [transactionsData]);
+
+  // Process goals data when it loads
+  useEffect(() => {
+    if (goalsData && Array.isArray(goalsData)) {
+      const processedGoals = goalsData.map(goal => ({
+        ...goal,
+        progress: goal.targetAmount > 0 
+          ? Math.round((goal.currentAmount / goal.targetAmount) * 100) 
+          : 0
+      }));
+      setSavingsGoals(processedGoals);
+    }
+  }, [goalsData]);
+
   return (
     <div className="space-y-6">
       {/* Header */}
@@ -55,13 +124,20 @@ export default function DashboardPage() {
             <DollarSign className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">R12,450.00</div>
+            <div className="text-2xl font-bold">
+              {transactionsLoading ? (
+                <span className="text-muted">Loading...</span>
+              ) : (
+                `R${summaryData.balance.toFixed(2)}`
+              )}
+            </div>
             <p className="text-xs text-muted-foreground">
-              <span className="text-accent-500 flex items-center">
-                <ArrowUpIcon className="h-3 w-3 mr-1" />
-                +2.5%
-              </span>
-              from last month
+              {!transactionsLoading && (
+                <span className="text-accent-500 flex items-center">
+                  <ArrowUpIcon className="h-3 w-3 mr-1" />
+                  Updated
+                </span>
+              )}
             </p>
           </CardContent>
         </Card>
@@ -72,13 +148,20 @@ export default function DashboardPage() {
             <TrendingUp className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">R5,600.00</div>
+            <div className="text-2xl font-bold">
+              {transactionsLoading ? (
+                <span className="text-muted">Loading...</span>
+              ) : (
+                `R${summaryData.income.toFixed(2)}`
+              )}
+            </div>
             <p className="text-xs text-muted-foreground">
-              <span className="text-accent-500 flex items-center">
-                <ArrowUpIcon className="h-3 w-3 mr-1" />
-                +5.7%
-              </span>
-              from last month
+              {!transactionsLoading && (
+                <span className="text-accent-500 flex items-center">
+                  <ArrowUpIcon className="h-3 w-3 mr-1" />
+                  This month
+                </span>
+              )}
             </p>
           </CardContent>
         </Card>
@@ -89,13 +172,20 @@ export default function DashboardPage() {
             <CreditCard className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">R3,500.00</div>
+            <div className="text-2xl font-bold">
+              {transactionsLoading ? (
+                <span className="text-muted">Loading...</span>
+              ) : (
+                `R${summaryData.expenses.toFixed(2)}`
+              )}
+            </div>
             <p className="text-xs text-muted-foreground">
-              <span className="text-destructive-500 flex items-center">
-                <ArrowUpIcon className="h-3 w-3 mr-1" />
-                +3.2%
-              </span>
-              from last month
+              {!transactionsLoading && (
+                <span className="text-destructive-500 flex items-center">
+                  <ArrowUpIcon className="h-3 w-3 mr-1" />
+                  This month
+                </span>
+              )}
             </p>
           </CardContent>
         </Card>
@@ -106,13 +196,20 @@ export default function DashboardPage() {
             <Target className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">37.5%</div>
+            <div className="text-2xl font-bold">
+              {transactionsLoading ? (
+                <span className="text-muted">Loading...</span>
+              ) : (
+                `${summaryData.savingsRate.toFixed(1)}%`
+              )}
+            </div>
             <p className="text-xs text-muted-foreground">
-              <span className="text-accent-500 flex items-center">
-                <ArrowUpIcon className="h-3 w-3 mr-1" />
-                +1.2%
-              </span>
-              from last month
+              {!transactionsLoading && (
+                <span className="text-accent-500 flex items-center">
+                  <ArrowUpIcon className="h-3 w-3 mr-1" />
+                  This month
+                </span>
+              )}
             </p>
           </CardContent>
         </Card>
@@ -126,15 +223,21 @@ export default function DashboardPage() {
             <CardDescription>Monthly comparison for the last 6 months</CardDescription>
           </CardHeader>
           <CardContent>
-            <ResponsiveContainer width="100%" height={300}>
-              <BarChart data={monthlyData}>
-                <CartesianGrid strokeDasharray="3 3" />
-                <XAxis dataKey="month" />
-                <YAxis />
-                <Bar dataKey="income" fill="hsl(var(--accent))" name="Income" />
-                <Bar dataKey="expenses" fill="hsl(var(--destructive))" name="Expenses" />
-              </BarChart>
-            </ResponsiveContainer>
+            {transactionsLoading ? (
+              <div className="flex items-center justify-center h-[300px] text-muted-foreground">
+                Loading chart data...
+              </div>
+            ) : (
+              <ResponsiveContainer width="100%" height={300}>
+                <BarChart data={monthlyData}>
+                  <CartesianGrid strokeDasharray="3 3" />
+                  <XAxis dataKey="month" />
+                  <YAxis />
+                  <Bar dataKey="income" fill="hsl(var(--accent))" name="Income" />
+                  <Bar dataKey="expenses" fill="hsl(var(--destructive))" name="Expenses" />
+                </BarChart>
+              </ResponsiveContainer>
+            )}
           </CardContent>
         </Card>
 
@@ -145,33 +248,47 @@ export default function DashboardPage() {
             <CardDescription>Breakdown of your spending this month</CardDescription>
           </CardHeader>
           <CardContent>
-            <ResponsiveContainer width="100%" height={300}>
-              <PieChart>
-                <Pie
-                  data={categoryData}
-                  cx="50%"
-                  cy="50%"
-                  innerRadius={60}
-                  outerRadius={120}
-                  paddingAngle={5}
-                  dataKey="value"
-                >
-                  {categoryData.map((entry, index) => (
-                    <Cell key={`cell-${index}`} fill={entry.color} />
+            {transactionsLoading ? (
+              <div className="flex items-center justify-center h-[300px] text-muted-foreground">
+                Loading chart data...
+              </div>
+            ) : categoryData.length === 0 || (categoryData.length === 1 && categoryData[0].name === "No Data") ? (
+              <div className="flex flex-col items-center justify-center h-[300px] text-muted-foreground">
+                <LineChart className="h-16 w-16 mb-4 opacity-50" />
+                <p>No expense data available</p>
+                <p className="text-sm">Add transactions to see your spending breakdown</p>
+              </div>
+            ) : (
+              <>
+                <ResponsiveContainer width="100%" height={300}>
+                  <PieChart>
+                    <Pie
+                      data={categoryData}
+                      cx="50%"
+                      cy="50%"
+                      innerRadius={60}
+                      outerRadius={120}
+                      paddingAngle={5}
+                      dataKey="value"
+                    >
+                      {categoryData.map((entry, index) => (
+                        <Cell key={`cell-${index}`} fill={entry.color} />
+                      ))}
+                    </Pie>
+                  </PieChart>
+                </ResponsiveContainer>
+                <div className="grid grid-cols-2 gap-2 mt-4">
+                  {categoryData.map((category) => (
+                    <div key={category.name} className="flex items-center space-x-2">
+                      <div className="w-3 h-3 rounded-full" style={{ backgroundColor: category.color }}></div>
+                      <span className="text-sm">
+                        {category.name}: R{category.value.toFixed(2)}
+                      </span>
+                    </div>
                   ))}
-                </Pie>
-              </PieChart>
-            </ResponsiveContainer>
-            <div className="grid grid-cols-2 gap-2 mt-4">
-              {categoryData.map((category) => (
-                <div key={category.name} className="flex items-center space-x-2">
-                  <div className="w-3 h-3 rounded-full" style={{ backgroundColor: category.color }}></div>
-                  <span className="text-sm">
-                    {category.name}: R{category.value}
-                  </span>
                 </div>
-              ))}
-            </div>
+              </>
+            )}
           </CardContent>
         </Card>
       </div>
@@ -184,26 +301,40 @@ export default function DashboardPage() {
             <CardDescription>Your latest financial activity</CardDescription>
           </CardHeader>
           <CardContent>
-            <div className="space-y-4">
-              {recentTransactions.map((transaction) => (
-                <div key={transaction.id} className="flex items-center justify-between">
-                  <div>
-                    <p className="font-medium">{transaction.title}</p>
-                    <p className="text-sm text-gray-500">
-                      {transaction.category} • {transaction.date}
-                    </p>
-                  </div>
-                  <div
-                    className={`font-semibold ${transaction.type === "income" ? "text-accent-500" : "text-destructive-500"}`}
-                  >
-                    {transaction.type === "income" ? "+" : ""}R{Math.abs(transaction.amount).toFixed(2)}
-                  </div>
+            {transactionsLoading ? (
+              <div className="flex items-center justify-center h-[200px] text-muted-foreground">
+                Loading transactions...
+              </div>
+            ) : recentTransactions.length === 0 ? (
+              <div className="flex flex-col items-center justify-center h-[200px] text-muted-foreground">
+                <CreditCard className="h-16 w-16 mb-4 opacity-50" />
+                <p>No transactions found</p>
+                <p className="text-sm">Add your first transaction to get started</p>
+              </div>
+            ) : (
+              <>
+                <div className="space-y-4">
+                  {recentTransactions.map((transaction) => (
+                    <div key={transaction.id} className="flex items-center justify-between">
+                      <div>
+                        <p className="font-medium">{transaction.description || transaction.title}</p>
+                        <p className="text-sm text-gray-500">
+                          {transaction.category} • {new Date(transaction.date).toLocaleDateString()}
+                        </p>
+                      </div>
+                      <div
+                        className={`font-semibold ${transaction.type === "income" ? "text-accent-500" : "text-destructive-500"}`}
+                      >
+                        {transaction.type === "income" ? "+" : ""}R{Math.abs(transaction.amount).toFixed(2)}
+                      </div>
+                    </div>
+                  ))}
                 </div>
-              ))}
-            </div>
-            <Button variant="outline" className="w-full mt-4 bg-muted">
-              View All Transactions
-            </Button>
+                <Button variant="outline" className="w-full mt-4 bg-muted">
+                  View All Transactions
+                </Button>
+              </>
+            )}
           </CardContent>
         </Card>
 
@@ -214,26 +345,40 @@ export default function DashboardPage() {
             <CardDescription>Track your progress towards financial goals</CardDescription>
           </CardHeader>
           <CardContent>
-            <div className="space-y-6">
-              {savingsGoals.map((goal) => (
-                <div key={goal.id} className="space-y-2">
-                  <div className="flex justify-between items-center">
-                    <span className="font-medium">{goal.title}</span>
-                    <span className="text-sm text-gray-500">
-                      R{goal.current.toLocaleString()} / R{goal.target.toLocaleString()}
-                    </span>
-                  </div>
-                  <Progress value={goal.progress} className="h-2" />
-                  <div className="flex justify-between items-center text-sm text-gray-500">
-                    <span>{goal.progress}% complete</span>
-                    <Badge variant="outline">R{(goal.target - goal.current).toLocaleString()} to go</Badge>
-                  </div>
+            {goalsLoading ? (
+              <div className="flex items-center justify-center h-[200px] text-muted-foreground">
+                Loading goals...
+              </div>
+            ) : savingsGoals.length === 0 ? (
+              <div className="flex flex-col items-center justify-center h-[200px] text-muted-foreground">
+                <Target className="h-16 w-16 mb-4 opacity-50" />
+                <p>No savings goals found</p>
+                <p className="text-sm">Create your first goal to track your progress</p>
+              </div>
+            ) : (
+              <>
+                <div className="space-y-6">
+                  {savingsGoals.map((goal) => (
+                    <div key={goal.id} className="space-y-2">
+                      <div className="flex justify-between items-center">
+                        <span className="font-medium">{goal.title}</span>
+                        <span className="text-sm text-gray-500">
+                          R{goal.currentAmount.toLocaleString()} / R{goal.targetAmount.toLocaleString()}
+                        </span>
+                      </div>
+                      <Progress value={goal.progress} className="h-2" />
+                      <div className="flex justify-between items-center text-sm text-gray-500">
+                        <span>{goal.progress}% complete</span>
+                        <Badge variant="outline">R{(goal.targetAmount - goal.currentAmount).toLocaleString()} to go</Badge>
+                      </div>
+                    </div>
+                  ))}
                 </div>
-              ))}
-            </div>
-            <Button variant="outline" className="w-full mt-4 bg-muted">
-              Manage Goals
-            </Button>
+                <Button variant="outline" className="w-full mt-4 bg-muted">
+                  Manage Goals
+                </Button>
+              </>
+            )}
           </CardContent>
         </Card>
       </div>

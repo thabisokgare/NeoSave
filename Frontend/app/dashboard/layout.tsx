@@ -40,6 +40,7 @@ const navigation = [
   { name: "Goals", href: "/dashboard/goals", icon: Target },
   { name: "Investments", href: "/dashboard/investments", icon: TrendingUp },
   { name: "Learning", href: "/dashboard/learning", icon: User },
+  { name: "Financial Survey", href: "/Survey", icon: Target },
 ]
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
@@ -47,10 +48,8 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   const router = useRouter()
 
   useEffect(() => {
-    if (!isAuthenticated) {
-      router.push("/login")
-    }
-  }, [isAuthenticated, router])
+    // This will handle authentication check and survey redirection
+  }, [])
 
   const [sidebarOpen, setSidebarOpen] = useState(false)
   const pathname = usePathname()

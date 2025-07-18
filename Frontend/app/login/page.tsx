@@ -1,6 +1,7 @@
 "use client"
 
 import { useState } from "react"
+import { storage } from "@/utils/local-storage"
 import { motion } from "framer-motion"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
@@ -44,8 +45,19 @@ export default function LoginPage() {
     try {
       await login(data.email, data.password)
       toast.success("Welcome back!")
-      router.push("/dashboard")
+      
+      // Check if user has completed the survey
+      const surveyCompleted = storage.getBool('SURVEY_COMPLETED')
+      
+      // If the survey is not completed, redirect to the survey page
+      if (!surveyCompleted) {
+        toast.success("Redirecting to survey...")
+        router.push("/Survey")
+      } else {
+        router.push("/dashboard")
+      }
     } catch (error: any) {
+      console.error('Login error:', error)
       toast.error(error.message || "Invalid credentials")
     } finally {
       setIsLoading(false)

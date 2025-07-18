@@ -1,6 +1,7 @@
 "use client"
 
 import { useState } from "react"
+import { storage } from "@/utils/local-storage"
 import { motion } from "framer-motion"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
@@ -28,6 +29,8 @@ const registerSchema = z
   })
 
 type RegisterForm = z.infer<typeof registerSchema>
+
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:8088/api"
 
 export default function RegisterPage() {
   const [isLoading, setIsLoading] = useState(false)
@@ -69,7 +72,7 @@ export default function RegisterPage() {
 
     try {
       // API call to /api/auth/register
-      const response = await fetch("http://localhost:8088/api/auth/register", {
+      const response = await fetch(`${API_BASE_URL}/auth/register`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -83,7 +86,11 @@ export default function RegisterPage() {
 
       if (response.ok) {
         toast.success("Account created successfully!")
-        router.push("/dashboard")
+        // Set a flag in localStorage to indicate this is a new user
+        storage.setBool('IS_NEW_USER', true)
+        // Redirect to survey page instead of dashboard
+        router.push("/Survey")
+        toast.success("Redirecting to survey...")
       } else {
         const error = await response.json()
         toast.error(error.message || "Registration failed")

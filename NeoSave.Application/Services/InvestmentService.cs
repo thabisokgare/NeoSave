@@ -2,34 +2,34 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
 using NeoSave.Application.DTOs.Investment;
 using NeoSave.Application.Interfaces;
 using NeoSave.Domain.Entities;
+using NeoSave.Infrastructure.Data;
 
 namespace NeoSave.Application.Services
 {
     public class InvestmentService : IInvestmentService
     {
-        // TODO: Replace with proper database/repository pattern
-        // This static collection is NOT thread-safe and should only be used for development
-        private static readonly List<Investment> _investments = new();
-        private static readonly object _lockObject = new object();
+        private readonly NeoSaveDbContext _context;
 
+        public InvestmentService(NeoSaveDbContext context)
+        {
+            _context = context ?? throw new ArgumentNullException(nameof(context));
+        }
         public async Task<IEnumerable<InvestmentDto>> GetUserInvestmentsAsync(Guid userId)
         {
             // Input validation
             if (userId == Guid.Empty)
                 throw new ArgumentException("UserId cannot be empty", nameof(userId));
 
-            await Task.CompletedTask; // Placeholder for async operation
-            
-            lock (_lockObject)
-            {
-                return _investments
-                    .Where(i => i.UserId == userId)
-                    .Select(MapToDto)
-                    .ToList(); // Materialize to avoid deferred execution issues
-            }
+            var investments = await _context.Investments
+                .Where(i => i.UserId == userId)
+                .OrderByDescending(i => i.CreatedAt)
+                .ToListAsync();
+                
+            return investments.Select(MapToDto).ToList();
         }
 
         public async Task<InvestmentDto> GetInvestmentAsync(Guid id, Guid userId)
@@ -40,13 +40,10 @@ namespace NeoSave.Application.Services
             if (userId == Guid.Empty)
                 throw new ArgumentException("UserId cannot be empty", nameof(userId));
 
-            await Task.CompletedTask; // Placeholder for async operation
-            
-            lock (_lockObject)
-            {
-                var investment = _investments.FirstOrDefault(i => i.Id == id && i.UserId == userId);
-                return investment == null ? throw new KeyNotFoundException($"Investment with ID {id} not found") : MapToDto(investment);
-            }
+            var investment = await _context.Investments
+                .FirstOrDefaultAsync(i => i.Id == id && i.UserId == userId);
+                
+            return investment == null ? throw new KeyNotFoundException($"Investment with ID {id} not found") : MapToDto(investment);
         }
 
         public async Task<InvestmentDto> CreateInvestmentAsync(CreateInvestmentDto dto, Guid userId)
@@ -61,8 +58,6 @@ namespace NeoSave.Application.Services
             if (dto.Amount <= 0)
                 throw new ArgumentException("Investment amount must be greater than zero", nameof(dto.Amount));
 
-            await Task.CompletedTask; // Placeholder for async operation
-
             var investment = new Investment
             {
                 Id = Guid.NewGuid(),
@@ -74,10 +69,8 @@ namespace NeoSave.Application.Services
                 CreatedAt = DateTime.UtcNow
             };
 
-            lock (_lockObject)
-            {
-                _investments.Add(investment);
-            }
+            _context.Investments.Add(investment);
+            await _context.SaveChangesAsync();
 
             return MapToDto(investment);
         }
@@ -92,33 +85,31 @@ namespace NeoSave.Application.Services
             if (userId == Guid.Empty)
                 throw new ArgumentException("UserId cannot be empty", nameof(userId));
 
-            await Task.CompletedTask; // Placeholder for async operation
+            var investment = await _context.Investments
+                .FirstOrDefaultAsync(i => i.Id == id && i.UserId == userId);
+                
+            if (investment == null) 
+                throw new KeyNotFoundException($"Investment with ID {id} not found");
 
-            lock (_lockObject)
+            // Only update fields that are provided and valid
+            if (!string.IsNullOrWhiteSpace(dto.Name))
+                investment.Name = dto.Name.Trim();
+            
+            if (!string.IsNullOrWhiteSpace(dto.Type))
+                investment.Type = dto.Type.Trim();
+            
+            if (dto.Amount.HasValue)
             {
-                var investment = _investments.FirstOrDefault(i => i.Id == id && i.UserId == userId);
-                if (investment == null) 
-                    throw new KeyNotFoundException($"Investment with ID {id} not found");
-
-                // Only update fields that are provided and valid
-                if (!string.IsNullOrWhiteSpace(dto.Name))
-                    investment.Name = dto.Name.Trim();
-                
-                if (!string.IsNullOrWhiteSpace(dto.Type))
-                    investment.Type = dto.Type.Trim();
-                
-                if (dto.Amount.HasValue)
-                {
-                    if (dto.Amount.Value <= 0)
-                        throw new ArgumentException("Investment amount must be greater than zero");
-                    investment.Amount = dto.Amount.Value;
-                }
-                
-                if (dto.Description != null) // Allow empty string to clear description
-                    investment.Description = dto.Description.Trim();
-
-                return MapToDto(investment);
+                if (dto.Amount.Value <= 0)
+                    throw new ArgumentException("Investment amount must be greater than zero");
+                investment.Amount = dto.Amount.Value;
             }
+            
+            if (dto.Description != null) // Allow empty string to clear description
+                investment.Description = dto.Description.Trim();
+
+            await _context.SaveChangesAsync();
+            return MapToDto(investment);
         }
 
         public async Task<bool> DeleteInvestmentAsync(Guid id, Guid userId)
@@ -129,17 +120,15 @@ namespace NeoSave.Application.Services
             if (userId == Guid.Empty)
                 throw new ArgumentException("UserId cannot be empty", nameof(userId));
 
-            await Task.CompletedTask; // Placeholder for async operation
+            var investment = await _context.Investments
+                .FirstOrDefaultAsync(i => i.Id == id && i.UserId == userId);
+                
+            if (investment == null) 
+                return false;
 
-            lock (_lockObject)
-            {
-                var investment = _investments.FirstOrDefault(i => i.Id == id && i.UserId == userId);
-                if (investment == null) 
-                    return false;
-
-                _investments.Remove(investment);
-                return true;
-            }
+            _context.Investments.Remove(investment);
+            await _context.SaveChangesAsync();
+            return true;
         }
 
         /// <summary>

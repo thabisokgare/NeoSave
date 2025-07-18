@@ -139,6 +139,20 @@ namespace NeoSave.Infrastructure.Migrations
                     b.ToTable("Investments");
                 });
 
+            modelBuilder.Entity("NeoSave.Domain.Entities.SurveyResponse", b =>
+                {
+                    b.Property<Guid>("Id").ValueGeneratedOnAdd();
+                    b.Property<Guid>("UserId");
+                    b.Property<string>("HasSavingsGoal");
+                    b.Property<string>("SavingsTarget");
+                    b.Property<string>("SpecificGoal");
+                    b.Property<string>("TracksExpenses");
+                    b.Property<string>("Challenges");
+                    b.Property<DateTime>("SubmittedAt");
+                    b.HasKey("Id");
+                    b.ToTable("SurveyResponses");
+                });
+
             modelBuilder.Entity("NeoSave.Domain.Entities.Transaction", b =>
                 {
                     b.Property<Guid>("Id")

@@ -1,15 +1,16 @@
 import { useState } from "react"
+import { storage } from "@/utils/local-storage"
 
 
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:8088/api"
 
 export function useAuth() {
-  const getStoredToken = () =>
-    typeof window !== "undefined" ? localStorage.getItem("jwt") : null
+  const getStoredToken = () => storage.get('JWT')
 
   const [token, setToken] = useState<string | null>(getStoredToken)
 
   const login = async (email: string, password: string) => {
-    const res = await fetch("http://localhost:8088/api/auth/login", {
+    const res = await fetch(`${API_BASE_URL}/auth/login`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ email, password }),
@@ -17,13 +18,13 @@ export function useAuth() {
     if (!res.ok) throw new Error("Login failed")
 
     const data = await res.json()
-    localStorage.setItem("jwt", data.token)
+    storage.set('JWT', data.token)
     setToken(data.token)
     return data.token
   }
 
   const logout = () => {
-    localStorage.removeItem("jwt")
+    storage.remove('JWT')
     setToken(null)
   }
 

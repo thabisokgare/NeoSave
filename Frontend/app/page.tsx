@@ -6,10 +6,10 @@ import { Badge } from "@/components/ui/badge"
 import { ThemeToggle } from "@/components/theme-toggle"
 import { LoadingSpinner } from "@/components/ui/loading-spinner"
 import { ArrowRight, BarChart3, Target, TrendingUp, Shield, Wallet, Menu, X, Star, CheckCircle } from "lucide-react"
-import Link from "next/link"
 import { motion, useScroll, useTransform, AnimatePresence } from "framer-motion"
 import { useState, useEffect } from "react"
 import { useTheme } from "next-themes"
+import Link from "next/link"
 
 // Navbar Component
 function Navbar() {
@@ -68,6 +68,21 @@ function Navbar() {
                 />
               </motion.a>
             ))}
+            <Link href="/Survey">
+              <motion.a
+                className="text-muted-foreground hover:text-foreground transition-colors relative group"
+                whileHover={{ y: -2 }}
+                transition={{ duration: 0.2 }}
+              >
+                Financial Survey
+                <motion.div
+                  className="absolute -bottom-1 left-0 right-0 h-0.5 bg-foreground rounded-full"
+                  initial={{ scaleX: 0 }}
+                  whileHover={{ scaleX: 1 }}
+                  transition={{ duration: 0.3 }}
+                />
+              </motion.a>
+            </Link>
           </div>
 
           <div className="hidden md:flex items-center space-x-4">
@@ -114,6 +129,14 @@ function Navbar() {
                     {item}
                   </a>
                 ))}
+                <Link href="/Survey">
+                  <a
+                    className="text-muted-foreground hover:text-foreground transition-colors py-2"
+                    onClick={() => setIsMobileMenuOpen(false)}
+                  >
+                    Financial Survey
+                  </a>
+                </Link>
                 <div className="flex flex-col space-y-2 pt-4 border-t border-border">
                   <Link href="/login">
                     <Button variant="ghost" className="w-full justify-start">

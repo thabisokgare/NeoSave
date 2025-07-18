@@ -54,8 +54,7 @@ export default function BudgetPage() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           name: form.name,
-          plannedAmount: parseFloat(form.plannedAmount),
-          actualAmount: parseFloat(form.actualAmount),
+          amount: parseFloat(form.plannedAmount), // Use 'amount' for planned
           category: form.category,
           startDate: form.startDate,
           endDate: form.endDate,
