@@ -9,20 +9,13 @@ namespace NeoSave.API.Controllers
     [ApiController]
     [Route("api/[controller]")]
     [Authorize]
-    public class TransactionController : ControllerBase
+    public class TransactionController(ITransactionService transactionService) : ControllerBase
     {
-        private readonly ITransactionService _transactionService;
-
-        public TransactionController(ITransactionService transactionService)
-        {
-            _transactionService = transactionService;
-        }
-
         [HttpGet]
         public async Task<ActionResult<IEnumerable<TransactionDto>>> GetUserTransactions()
         {
             var userId = GetCurrentUserId();
-            var transactions = await _transactionService.GetUserTransactionsAsync(userId);
+            var transactions = await transactionService.GetUserTransactionsAsync(userId);
             return Ok(transactions);
         }
 
@@ -30,7 +23,7 @@ namespace NeoSave.API.Controllers
         public async Task<ActionResult<TransactionDto>> GetTransaction(Guid id)
         {
             var userId = GetCurrentUserId();
-            var transaction = await _transactionService.GetTransactionAsync(id, userId);
+            var transaction = await transactionService.GetTransactionAsync(id, userId);
             if (transaction == null)
                 return NotFound($"Transaction with ID {id} not found");
             return Ok(transaction);
@@ -42,7 +35,7 @@ namespace NeoSave.API.Controllers
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
             var userId = GetCurrentUserId();
-            var createdTransaction = await _transactionService.CreateTransactionAsync(dto, userId);
+            var createdTransaction = await transactionService.CreateTransactionAsync(dto, userId);
             return CreatedAtAction(nameof(GetTransaction), new { id = createdTransaction.Id }, createdTransaction);
         }
 
@@ -52,7 +45,7 @@ namespace NeoSave.API.Controllers
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
             var userId = GetCurrentUserId();
-            var updatedTransaction = await _transactionService.UpdateTransactionAsync(id, dto, userId);
+            var updatedTransaction = await transactionService.UpdateTransactionAsync(id, dto, userId);
             if (updatedTransaction == null)
                 return NotFound($"Transaction with ID {id} not found");
             return Ok(updatedTransaction);
@@ -62,7 +55,7 @@ namespace NeoSave.API.Controllers
         public async Task<ActionResult> DeleteTransaction(Guid id)
         {
             var userId = GetCurrentUserId();
-            var success = await _transactionService.DeleteTransactionAsync(id, userId);
+            var success = await transactionService.DeleteTransactionAsync(id, userId);
             if (!success)
                 return NotFound($"Transaction with ID {id} not found");
             return NoContent();
@@ -74,7 +67,10 @@ namespace NeoSave.API.Controllers
                 ?? User.FindFirst("sub")?.Value
                 ?? User.FindFirst("nameid")?.Value;
             if (string.IsNullOrEmpty(userIdClaim) || !Guid.TryParse(userIdClaim, out var userId))
+            {
                 throw new UnauthorizedAccessException("Invalid user token");
+            }
+                
             return userId;
         }
     }

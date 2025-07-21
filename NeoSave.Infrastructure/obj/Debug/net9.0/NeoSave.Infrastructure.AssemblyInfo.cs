@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("NeoSave.Infrastructure")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+0130f54d42eb9d8373dc7ff2718e559a51f75a34")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+f2eb195295ea8714563e9c4efba62d3a52fe578e")]
 [assembly: System.Reflection.AssemblyProductAttribute("NeoSave.Infrastructure")]
 [assembly: System.Reflection.AssemblyTitleAttribute("NeoSave.Infrastructure")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

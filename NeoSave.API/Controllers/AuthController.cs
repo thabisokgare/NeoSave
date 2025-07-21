@@ -29,7 +29,7 @@ namespace NeoSave.API.Controllers
             return Ok(new { message = result });
         }
 
-        [AllowAnonymous]
+        [Authorize]
         [HttpPost("login")]
         public async Task<IActionResult> Login(LoginRequest request)
         {

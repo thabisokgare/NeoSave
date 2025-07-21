@@ -59,7 +59,10 @@ namespace NeoSave.Application.Services
             // 2. Verify the password
             var hashedPassword = HashPassword(request.Password);
             if (hashedPassword != user.PasswordHash)
+            {
                 return null;
+            }
+               
 
             // 3. Generate and return token
             return GenerateToken(user);
