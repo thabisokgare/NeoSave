@@ -119,7 +119,7 @@ if (app.Environment.IsDevelopment())
 // 8. Add CORS middleware (must be before authentication)
 app.UseCors("AllowFrontend");
 
-// 9. Add authentication/authorization middleware (order matters!)
+// 9. Add authentication/authorization middleware
 app.UseAuthentication(); // <-- Must come before UseAuthorization
 app.UseAuthorization();
 
