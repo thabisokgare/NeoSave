@@ -15,7 +15,7 @@ namespace NeoSave.Infrastructure.Data
         public DbSet<Goal> Goals { get; set; }
         public DbSet<Investment> Investments { get; set; }
         public DbSet<Transaction> Transactions { get; set; }
-        public DbSet<NeoSave.Domain.Entities.SurveyResponse> SurveyResponses { get; set; }
+        public DbSet<SurveyResponse> SurveyResponses { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

@@ -12,7 +12,7 @@ import { LoadingSpinner } from "@/components/ui/loading-spinner"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { z } from "zod"
-import Link from "next/link"
+import Link from "next/link";
 import { useRouter } from "next/navigation"
 import { toast } from "sonner"
 import { Wallet, Eye, EyeOff, ArrowLeft } from "lucide-react"
@@ -29,7 +29,8 @@ type LoginForm = z.infer<typeof loginSchema>
 export default function LoginPage() {
   const [isLoading, setIsLoading] = useState(false)
   const [showPassword, setShowPassword] = useState(false)
-  const router = useRouter()
+ const router = useRouter()
+  const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:8088/api"
   const { login } = useAuth()
 
   const {
@@ -43,25 +44,32 @@ export default function LoginPage() {
   const onSubmit = async (data: LoginForm) => {
     setIsLoading(true)
     try {
-      await login(data.email, data.password)
-      toast.success("Welcome back!")
-      
-      // Check if user has completed the survey
-      const surveyCompleted = storage.getBool('SURVEY_COMPLETED')
-      
-      // If the survey is not completed, redirect to the survey page
-      if (!surveyCompleted) {
-        toast.success("Redirecting to survey...")
-        router.push("/Survey")
-      } else {
+      // API call to login
+      const response = await fetch(`${API_BASE_URL}/auth/login`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({  
+          email: data.email,
+          password: data.password,
+          rememberMe: data.rememberMe,
+        }),
+      })
+      if (response.ok) {
+        await login(data.email, data.password)
+        toast.success("Welcome back!")
         router.push("/dashboard")
+      } else {
+        const errorData = await response.json()
+        toast.error(errorData.message || "Login failed. Please try again.")
       }
-    } catch (error: any) {
-      console.error('Login error:', error)
-      toast.error(error.message || "Invalid credentials")
-    } finally {
-      setIsLoading(false)
+    } catch (error) {
+      console.error("Login error:", error)
+      toast.error("An unexpected error occurred. Please try again later.")
     }
+    setIsLoading(false)
+       
   }
 
   return (
@@ -245,19 +253,11 @@ export default function LoginPage() {
                 </Link>
               </p>
             </motion.div>
-
-            {/* Demo Credentials */}
-            <motion.div
-              className="mt-6 p-4 bg-muted/50 rounded-lg"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ delay: 0.9 }}
-            >
-              <p className="text-xs text-muted-foreground text-center">Demo: demo@neosave.com / password123</p>
-            </motion.div>
+           
           </CardContent>
         </Card>
       </motion.div>
     </div>
   )
 }
+

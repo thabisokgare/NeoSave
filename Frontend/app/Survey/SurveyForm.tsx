@@ -28,6 +28,7 @@ export default function SurveyForm({ onSuccess }: { onSuccess: () => void }) {
     setLoading(true)
     setError(null)
     try {
+      // API call to submit survey
       const res = await fetch(`${API_BASE_URL}/survey/submit`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
