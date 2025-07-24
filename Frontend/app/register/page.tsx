@@ -89,7 +89,7 @@ export default function RegisterPage() {
         // Set a flag in localStorage to indicate this is a new user
         storage.setBool('IS_NEW_USER', true)
         // Redirect to survey page instead of dashboard
-        router.push("/Survey")
+        router.push("/Survey ")
         toast.success("Redirecting to survey...")
       } else {
         const error = await response.json()
