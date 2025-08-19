@@ -17,6 +17,7 @@ import { useRouter } from "next/navigation"
 import { toast } from "sonner"
 import { Wallet, Eye, EyeOff, ArrowLeft } from "lucide-react"
 import { useAuth } from "@/hooks/useAuth"
+import axios from 'axios';
 
 const loginSchema = z.object({
   email: z.string().email("Please enter a valid email address"),
@@ -30,7 +31,7 @@ export default function LoginPage() {
   const [isLoading, setIsLoading] = useState(false)
   const [showPassword, setShowPassword] = useState(false)
  const router = useRouter()
-  const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:8088/api"
+  const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:8088"
   const { login } = useAuth()
 
   const {
@@ -43,33 +44,63 @@ export default function LoginPage() {
 
   const onSubmit = async (data: LoginForm) => {
     setIsLoading(true)
+
     try {
-      // API call to login
-      const response = await fetch(`${API_BASE_URL}/auth/login`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({  
-          email: data.email,
-          password: data.password,
-          rememberMe: data.rememberMe,
-        }),
-      })
-      if (response.ok) {
-        await login(data.email, data.password)
+      // Prefer using the auth hook if it implements the login call
+      if (typeof login === "function") {
+        const hookResult = await login(data.email, data.password)
+        // hook may return true, a token string, or an object { token }
+        if (hookResult === true) {
+          toast.success("Welcome back!")
+          router.push("/dashboard")
+          return
+        }
+
+        const maybeToken = typeof hookResult === "string" ? hookResult : hookResult?.token
+        if (maybeToken) {
+          try {
+            if (typeof storage.set === "function") storage.set("JWT", maybeToken)
+            else localStorage.setItem("JWT", maybeToken)
+          } catch {
+            localStorage.setItem("JWT", maybeToken)
+          }
+          toast.success("Welcome back!")
+          router.push("/dashboard")
+          return
+        }
+        // if hook didn't return a token, fallthrough to direct axios call
+      }
+
+      // Direct axios fallback
+      const response = await axios.post(`${API_BASE_URL}/auth/login`, {
+        email: data.email,
+        password: data.password,
+        rememberMe: data.rememberMe,
+      }, { timeout: 10000 })
+
+      const token = response.data?.token ?? response.data
+      if (token) {
+        try {
+          if (typeof storage.set === "function") storage.set("JWT", token)
+          else localStorage.setItem("JWT", token)
+        } catch {
+          localStorage.setItem("JWT", token)
+        }
         toast.success("Welcome back!")
         router.push("/dashboard")
       } else {
-        const errorData = await response.json()
-        toast.error(errorData.message || "Login failed. Please try again.")
+        toast.error(response.data?.message ?? "Login failed. Please try again.")
       }
-    } catch (error) {
-      console.error("Login error:", error)
-      toast.error("An unexpected error occurred. Please try again later.")
+    } catch (err: any) {
+      console.error("Login error:", err)
+      if (axios.isAxiosError(err) && err.response) {
+        toast.error(err.response.data?.message ?? err.response.statusText)
+      } else {
+        toast.error("An unexpected error occurred. Please try again later.")
+      }
+    } finally {
+      setIsLoading(false)
     }
-    setIsLoading(false)
-       
   }
 
   return (
@@ -228,10 +259,14 @@ export default function LoginPage() {
                   className="w-full h-12 bg-primary text-primary-foreground font-semibold shadow-lg hover:shadow-xl"
                   disabled={isLoading}
                 >
+                  
                   {isLoading ? (
                     <div className="flex items-center">
                       <LoadingSpinner size="sm" className="mr-2" />
                       Signing in...
+                      <Link href="/dashboard" className="text-primary hover:text-primary-foreground">
+                    
+                      </Link>
                     </div>
                   ) : (
                     "Sign In"

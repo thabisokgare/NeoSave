@@ -29,16 +29,25 @@ namespace NeoSave.API.Controllers
             return Ok(new { message = result });
         }
 
-        [Authorize]
+        
+        [AllowAnonymous]
         [HttpPost("login")]
         public async Task<IActionResult> Login(LoginRequest request)
         {
+
+            var result = await _authService.LoginAsync(request);
+            if (result == null)
+            {
+                return Ok(new { message = result });
+            }
             var token = await _authService.LoginAsync(request);
 
-            if (token == null)
-                return Unauthorized(new { message = "Invalid email or password." });
+           if (token == null)
+               return Unauthorized(new { message = "Invalid email or password." });
 
-            return Ok(new { token });
+           return Ok(new { token });
+
+            
         }
 
 

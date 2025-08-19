@@ -4,7 +4,7 @@ import { useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-
+import axios from 'axios';
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:8088/api"
 
 export default function SurveyForm({ onSuccess }: { onSuccess: () => void }) {
@@ -81,6 +81,10 @@ export default function SurveyForm({ onSuccess }: { onSuccess: () => void }) {
           {error && <div className="text-red-500">{error}</div>}
           {success && <div className="text-green-600">Survey submitted! Redirecting...</div>}
           <Button type="submit" className="w-full" disabled={loading}>{loading ? "Submitting..." : "Submit Survey"}</Button>
+
+          <div>
+            <label className = "block font-medium mb-1"> </label>
+          </div>
         </form>
       </CardContent>
     </Card>

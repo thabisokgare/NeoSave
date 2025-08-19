@@ -15,6 +15,7 @@ import Link from "next/link"
 import { useRouter } from "next/navigation"
 import { toast } from "sonner"
 import { Wallet, Eye, EyeOff, ArrowLeft } from "lucide-react"
+import axios from 'axios';
 
 const registerSchema = z
   .object({
@@ -28,6 +29,7 @@ const registerSchema = z
     path: ["confirmPassword"],
   })
 
+  
 type RegisterForm = z.infer<typeof registerSchema>
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:8088/api"
@@ -71,32 +73,25 @@ export default function RegisterPage() {
     setIsLoading(true)
 
     try {
-      // API call to /api/auth/register
-      const response = await fetch(`${API_BASE_URL}/auth/register`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          fullName: data.fullName,
-          email: data.email,
-          password: data.password,
-        }),
+      const response = await axios.post(`${API_BASE_URL}/auth/register`, {
+        fullName: data.fullName,
+        email: data.email,
+        password: data.password,
       })
 
-      if (response.ok) {
-        toast.success("Account created successfully!")
-        // Set a flag in localStorage to indicate this is a new user
-        storage.setBool('IS_NEW_USER', true)
-        // Redirect to survey page instead of dashboard
-        router.push("/Survey ")
-        toast.success("Redirecting to survey...")
+      // Axios throws for non-2xx by default, so reaching here means success.
+      toast.success("Account created successfully!")
+      storage.setBool('IS_NEW_USER', true)
+      router.push("/dashboard") // removed extra space
+      toast.success("Redirecting to Dashboard...")
+    } catch (err) {
+      if (axios.isAxiosError(err) && err.response) {
+        // Prefer message from server if available
+        const message = err.response.data?.message ?? err.response.statusText
+        toast.error(message)
       } else {
-        const error = await response.json()
-        toast.error(error.message || "Registration failed")
+        toast.error("Registration failed. Please try again.")
       }
-    } catch (error) {
-      toast.error("Registration failed. Please try again.")
     } finally {
       setIsLoading(false)
     }

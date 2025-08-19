@@ -9,6 +9,7 @@ using NeoSave.Domain.Entities;
 using NeoSave.Infrastructure.Data;
 using NeoSave.Application.DTOs.Auth;
 using NeoSave.Application.Interfaces;
+using System.ComponentModel.DataAnnotations;
 
 namespace NeoSave.Application.Services
 {
@@ -25,24 +26,23 @@ namespace NeoSave.Application.Services
 
         public async Task<string?> RegisterAsync(RegisterRequest request)
         {
-            // 1. Check if user already exists
-            var existingUser = await _context.Users.FirstOrDefaultAsync(u => u.Email == request.Email);
-            if (existingUser != null)
+            var email = request.Email.Trim().ToLowerInvariant();
+
+            if (await _context.Users.AnyAsync(u => u.Email.ToLower() == email))
                 return "A user with this email already exists.";
 
-            // 2. Hash the password
-            var passwordHash = HashPassword(request.Password);
+            var salt = GenerateSalt();
+            var hash = HashPasswordBytes(request.Password, salt);
 
-            // 3. Create new user entity
             var user = new User
             {
+                Id = Guid.NewGuid(),
                 FullName = request.FullName,
-                Email = request.Email,
-                PasswordHash = passwordHash,
+                Email = email,
+                PasswordHash = $"{Convert.ToBase64String(salt)}.{Convert.ToBase64String(hash)}",
                 CreatedAt = DateTime.UtcNow
             };
 
-            // 4. Save the user
             _context.Users.Add(user);
             await _context.SaveChangesAsync();
 
@@ -51,29 +51,41 @@ namespace NeoSave.Application.Services
 
         public async Task<string?> LoginAsync(LoginRequest request)
         {
-            // 1. Find the user by email
-            var user = await _context.Users.FirstOrDefaultAsync(u => u.Email == request.Email);
-            if (user == null)
+            var email = request.Email.Trim().ToLowerInvariant();
+            var user = await _context.Users.SingleOrDefaultAsync(u => u.Email.ToLower() == email);
+            if (user == null) return null;
+
+            if (!VerifyPassword(request.Password, user.PasswordHash))
                 return null;
 
-            // 2. Verify the password
-            var hashedPassword = HashPassword(request.Password);
-            if (hashedPassword != user.PasswordHash)
-            {
-                return null;
-            }
-               
-
-            // 3. Generate and return token
             return GenerateToken(user);
         }
 
-        private string HashPassword(string password)
+        // helpers
+        private static byte[] GenerateSalt(int size = 16)
         {
-            using var sha256 = SHA256.Create();
-            var bytes = Encoding.UTF8.GetBytes(password);
-            var hash = sha256.ComputeHash(bytes);
-            return Convert.ToBase64String(hash);
+            var salt = new byte[size];
+            using var rng = RandomNumberGenerator.Create();
+            rng.GetBytes(salt);
+            return salt;
+        }
+
+        private static byte[] HashPasswordBytes(string password, byte[] salt, int iterations = 100_000, int length = 32)
+        {
+            using var pbkdf2 = new Rfc2898DeriveBytes(password, salt, iterations, HashAlgorithmName.SHA256);
+            return pbkdf2.GetBytes(length);
+        }
+
+        private static bool VerifyPassword(string password, string stored)
+        {
+            if (string.IsNullOrEmpty(stored)) return false;
+            var parts = stored.Split('.', 2);
+            if (parts.Length != 2) return false;
+
+            var salt = Convert.FromBase64String(parts[0]);
+            var expected = Convert.FromBase64String(parts[1]);
+            var actual = HashPasswordBytes(password, salt);
+            return CryptographicOperations.FixedTimeEquals(actual, expected);
         }
 
         private string GenerateToken(User user)
@@ -83,7 +95,7 @@ namespace NeoSave.Application.Services
                 new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
                 new Claim(ClaimTypes.Name, user.FullName),
                 new Claim(ClaimTypes.Email, user.Email),
-                
+
             };
 
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Jwt:Key"]!));

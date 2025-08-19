@@ -1,4 +1,4 @@
-using Microsoft.EntityFrameworkCore;
+ using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
@@ -65,15 +65,22 @@ builder.Services.AddScoped<ITransactionService, TransactionService>();
 builder.Services.AddScoped<ISurveyService, SurveyService>();
 
 // 5. Add CORS for frontend integration
-builder.Services.AddCors(options =>
-{
-    options.AddPolicy("AllowFrontend",
-        policy => policy
-            .WithOrigins("http://localhost:3000") // Add your frontend URLs
-            .AllowAnyHeader()
-            .AllowAnyMethod()
-            .AllowCredentials());
-});
+// public void ConfigureServices(ServiceCollection services)
+// {
+
+//     services.AddCors(options =>
+//     {
+//         options.AddPolicy("AllowAll", builder =>
+//         {
+//             builder.AllowAnyOrigin()
+//                    .AllowAnyHeader()
+//                    .AllowAnyMethod();
+//         });
+//     });
+// }
+
+
+
 
 // 6. Configure JWT Authentication
 var jwtSettings = builder.Configuration.GetSection("Jwt");
@@ -117,10 +124,13 @@ if (app.Environment.IsDevelopment())
 }
 
 // 8. Add CORS middleware (must be before authentication)
-app.UseCors("AllowFrontend");
+app.UseCors("AllowAll");
+app.UseRouting();
+
 
 // 9. Add authentication/authorization middleware
-app.UseAuthentication(); // <-- Must come before UseAuthorization
+app.UseAuthentication();
+ // <-- Must come before UseAuthorization
 app.UseAuthorization();
 
 app.MapControllers();
